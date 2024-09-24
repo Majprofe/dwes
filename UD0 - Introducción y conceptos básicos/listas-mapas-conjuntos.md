@@ -2,7 +2,7 @@
 
 ## Introducción
 
-Las colecciones en Java son estructuras de datos que permiten almacenar y manipular grupos de objetos de manera eficiente. Las colecciones más comunes son **Listas**, **Mapas** y **Conjuntos** (*Sets*). Estos apuntes te ayudarán a comprender cómo funcionan, sus principales implementaciones y cómo utilizarlos en tus programas.
+Las colecciones en Java son estructuras de datos que permiten almacenar y manipular grupos de objetos de manera eficiente. Las colecciones más comunes son **Listas**, **Mapas** y **Conjuntos** (*Sets*). 
 
 ---
 
@@ -98,6 +98,7 @@ public class EjemploMapa {
     }
 }
 ```
+[Más información](https://jarroba.com/map-en-java-con-ejemplos/)
 
 ---
 
@@ -174,44 +175,18 @@ public class EjemploConjunto {
 
 - Dividir la frase en palabras.
 - Convertir todas las palabras a minúsculas para evitar duplicados por mayúsculas.
+- Introducir cada palabra en el conjunto Set.
 
 ### Ejercicio 4
-
-**Descripción:** Implementa un programa que gestione una lista de tareas utilizando una **LinkedList**. Debe permitir agregar, eliminar y mostrar tareas. Las tareas deben tener una prioridad, y al mostrarlas, deben ordenarse por prioridad.
-
-**Puntos a considerar:**
-
-- Crear una clase `Tarea` con atributos `descripcion` y `prioridad`.
-- Utilizar `Collections.sort()` con un comparador personalizado.
-
-### Ejercicio 5
-
-**Descripción:** Desarrolla un programa que lea un texto y cuente la frecuencia de cada palabra utilizando un **TreeMap**. Luego, muestra las palabras en orden alfabético junto con su frecuencia.
-
-**Puntos a considerar:**
-
-- Eliminar signos de puntuación.
-- Ignorar diferencias entre mayúsculas y minúsculas.
-
-### Ejercicio 6
-
-**Descripción:** Crea un **HashSet** de números enteros y encuentra la intersección y unión con otro **HashSet** dado.
-
-**Puntos a considerar:**
-
-- Utilizar métodos `addAll()`, `retainAll()` y `removeAll()`.
-- Mostrar los resultados de la unión e intersección.
-
-### Ejercicio 7
 
 **Descripción:** Utiliza un **LinkedHashMap** para mantener el orden de inserción de elementos. Almacena productos y sus precios. Luego, muestra los productos en el orden en que fueron agregados.
 
 **Puntos a considerar:**
 
 - Añadir varios productos con sus precios.
-- Recorrer el mapa y mostrar los productos y precios.
+- Recorrer el mapa con un iterador y mostrar los productos y precios.
 
-### Ejercicio 8
+### Ejercicio 5
 
 **Descripción:** Crea una aplicación que gestione una lista de estudiantes y sus notas utilizando una **ArrayList** de objetos `Estudiante`. Calcula la nota media de la clase y muestra los estudiantes cuya nota está por encima de la media.
 
@@ -220,7 +195,7 @@ public class EjemploConjunto {
 - Crear la clase `Estudiante` con atributos `nombre` y `nota`.
 - Calcular la media recorriendo la lista.
 
-### Ejercicio 9
+### Ejercicio 6
 
 **Descripción:** Implementa un programa que lea múltiples líneas de texto y utilice un **TreeSet** para almacenar y mostrar todas las palabras únicas ordenadas alfabéticamente.
 
@@ -229,7 +204,7 @@ public class EjemploConjunto {
 - Continuar leyendo líneas hasta que el usuario indique fin.
 - Utilizar el método `compareTo` para el ordenamiento natural.
 
-### Ejercicio 10
+### Ejercicio 7
 
 **Descripción:** Desarrolla un sistema de gestión de inventario utilizando un **HashMap** donde las claves sean códigos de producto y los valores sean objetos `Producto` que incluyan nombre, precio y cantidad. Implementa funcionalidades para agregar, eliminar, actualizar y buscar productos.
 
@@ -239,6 +214,3 @@ public class EjemploConjunto {
 - Manejar las opciones mediante un menú interactivo.
 - Asegurar que los códigos de producto sean únicos.
 
----
-
-¡Estos ejercicios te ayudarán a practicar y consolidar tus conocimientos sobre listas, mapas y conjuntos en Java! Asegúrate de intentar resolverlos por tu cuenta antes de consultar soluciones.
