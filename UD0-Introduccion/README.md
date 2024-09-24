@@ -7,4 +7,4 @@
 - POO - Herencia
 - POO - Polimorfismo
 - POO - Intefaces
-- [Colecciones de objetos](listas-mapas-conjuntos.md)
+- [Colecciones de objetos](./listas-mapas-conjuntos.md)
