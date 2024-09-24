@@ -2,7 +2,7 @@
 Apuntes del módulo de "Desarrollo Web en Entorno Servidor" de 2º curso del CFGS "Desarrollo de Aplicaciones Web". 
 
 ## Contenidos
-[UD0 - Introducción y conceptos básicos](./UD0%20-%20Introducción%20y%20conceptos%20básicos/README.md)
+[UD0 - Introducción y conceptos básicos](./UD0-Introduccion/README.md)
 
 ## Ejercicios
 Accede a los **[ejercicios y retos](./ejercicios.md)** propuestos del módulo DWES.
