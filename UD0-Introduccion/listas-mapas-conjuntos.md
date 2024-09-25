@@ -88,6 +88,9 @@ Map<Integer, String> nombreMap = new HashMap<Integer, String>();
 - `size()`: Retorna el número de elementos en el mapa.
 - `isEmpty()`: Verifica si el mapa está vacío.
 - `clear()`: Elimina todos los elementos del mapa.
+- `getKey()`: Devuelve la clave del elemento concreto del mapa.
+- `getValue()`: Devuelve el valor del elemento concreto del mapa.
+
 
 ### Ejemplo de Uso
 
