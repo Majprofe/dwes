@@ -225,7 +225,7 @@ public class EjemploConjunto {
 **Puntos a considerar:**
 
 - Continuar leyendo líneas hasta que el usuario indique fin.
-- Utilizar el método `compareTo` para el ordenamiento natural, aunque en este caso no es necesario.
+- Investiga sobre el método `compareTo` para modificar el ordenamiento en caso de que fuese necesario.
 
 ### Ejercicio 7
 
