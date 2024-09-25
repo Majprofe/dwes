@@ -183,7 +183,7 @@ public class EjemploConjunto {
 
 **Puntos a considerar:**
 
-- Añadir varios productos con sus precios.
+- Añadir varios productos con sus precios Ejemplo("Manzana", 0.50).
 - Recorrer el mapa con un iterador y mostrar los productos y precios.
 
 ### Ejercicio 5
