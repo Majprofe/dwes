@@ -17,6 +17,9 @@ Una **Lista** es una colección ordenada que permite elementos duplicados. Los e
 - **ArrayList**: Implementa una lista utilizando un array dinámico. Es eficiente para acceso y modificación de elementos por índice.
 - **LinkedList**: Implementa una lista doblemente enlazada. Es eficiente para inserciones y eliminaciones en cualquier posición.
 
+Declaración de una Lista (ArrayList) con tipo "String"
+List<String> nombreLista = new ArrayList<String>();
+
 ### Operaciones Comunes
 
 - `add(elemento)`: Agrega un elemento al final de la lista.
@@ -26,6 +29,10 @@ Una **Lista** es una colección ordenada que permite elementos duplicados. Los e
 - `remove(indice)`: Elimina el elemento en la posición dada.
 - `size()`: Retorna el número de elementos en la lista.
 - `isEmpty()`: Verifica si la lista está vacía.
+- `clear()`: Elimina todos los elementos de la lista.
+- `contains(elemento)`: Verifica si la lista contiene el elemento.
+- `indexOf(elemento)`: Retorna el índice del primer elemento coincidente, o -1 si no lo encuentra.
+- `lastIndexOf(elemento)`: Retorna el índice del último elemento coincidente, o -1 si no lo encuentra.
 
 ### Ejemplo de Uso
 
@@ -65,15 +72,22 @@ Un **Mapa** es una colección que asocia claves a valores. Cada clave única se 
 - **TreeMap**: Almacena los pares clave-valor en un árbol rojo-negro, ordenados por las claves.
 - **LinkedHashMap**: Mantiene un orden de inserción o acceso.
 
+Declaración de un Map (HashMap) con clave "Integer" y valor "String"
+Map<Integer, String> nombreMap = new HashMap<Integer, String>();
+
 ### Operaciones Comunes
 
-- `put(clave, valor)`: Asocia un valor a una clave.
-- `get(clave)`: Obtiene el valor asociado a la clave.
-- `remove(clave)`: Elimina la clave y su valor asociado.
-- `containsKey(clave)`: Verifica si el mapa contiene la clave.
-- `containsValue(valor)`: Verifica si el mapa contiene el valor.
-- `keySet()`: Retorna un conjunto de todas las claves.
-- `values()`: Retorna una colección de todos los valores.
+- `put(clave, valor)`: Asocia un valor a una clave. Si la clave ya existe, sobrescribe el valor anterior.
+- `get(clave)`: Devuelve el valor asociado a la clave especificada, o `null` si la clave no está presente.
+- `remove(clave)`: Elimina el par clave-valor asociado a la clave.
+- `containsKey(clave)`: Verifica si el mapa contiene la clave especificada.
+- `containsValue(valor)`: Verifica si el mapa contiene el valor especificado.
+- `keySet()`: Devuelve un conjunto (`Set`) con todas las claves del mapa.
+- `values()`: Devuelve una colección con todos los valores del mapa.
+- `entrySet()`: Devuelve un conjunto de pares clave-valor (`Map.Entry`).
+- `size()`: Retorna el número de elementos en el mapa.
+- `isEmpty()`: Verifica si el mapa está vacío.
+- `clear()`: Elimina todos los elementos del mapa.
 
 ### Ejemplo de Uso
 
@@ -114,14 +128,19 @@ Un **Conjunto** es una colección que no permite elementos duplicados. Es ideal 
 - **TreeSet**: Almacena los elementos en un árbol rojo-negro, ordenados de manera natural o mediante un comparador.
 - **LinkedHashSet**: Mantiene el orden de inserción.
 
+Declaración de un Conjunto (HashSet) con tipo "String"
+Set<String> nombreSet = new HashSet<String>();
+
 ### Operaciones Comunes
 
-- `add(elemento)`: Agrega un elemento al conjunto.
-- `remove(elemento)`: Elimina un elemento del conjunto.
+- `add(elemento)`: Agrega un elemento al conjunto si no está presente. No permite duplicados.
+- `remove(elemento)`: Elimina el elemento del conjunto.
 - `contains(elemento)`: Verifica si el conjunto contiene el elemento.
 - `size()`: Retorna el número de elementos en el conjunto.
 - `isEmpty()`: Verifica si el conjunto está vacío.
 - `clear()`: Elimina todos los elementos del conjunto.
+- `iterator()`: Devuelve un iterador para recorrer los elementos del conjunto.
+
 
 ### Ejemplo de Uso
 
