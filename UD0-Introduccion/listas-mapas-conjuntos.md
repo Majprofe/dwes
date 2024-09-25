@@ -173,6 +173,7 @@ public class EjemploConjunto {
 
 **Puntos a considerar:**
 
+- Elimina todos los signos de puntuación (".",",","¡","!").
 - Dividir la frase en palabras.
 - Convertir todas las palabras a minúsculas para evitar duplicados por mayúsculas.
 - Introducir cada palabra en el conjunto Set.
