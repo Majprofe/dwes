@@ -5,7 +5,7 @@ Apuntes del módulo de "Desarrollo Web en Entorno Servidor" de 2º curso del CFG
 - [UD0 - Introducción y conceptos básicos](./UD0-Introduccion/README.md)
 - [UD1 - Arquitecturas y tecnologías en la programación web](./UD1-Arquitecturasytecnologias.md)
 - [UD2: Introducción a Spring Boot](./UD2-Introduccion-a-spring-boot.md)
-- UD3: Controladores y rutas
+- [UD3: Controladores, Rutas y el Patrón MVC en Spring Boot](./UD3-Controladores-rutas-mvc.md)
 - UD4: Gestión de datos con Spring Data JPA
 - UD5: Servicios y lógica de negocio
 - UD6: Seguridad con Spring Security

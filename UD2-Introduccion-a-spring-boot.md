@@ -99,20 +99,15 @@ demo/
 
 ### 4.1 Ficheros Importantes en un Proyecto Spring Boot
 
-`pom.xml` (o `build.gradle`)
-Este archivo gestiona las dependencias y el ciclo de vida del proyecto. En el caso de Maven, `pom.xml` define las dependencias, como Spring Web, así como plugins para construir y ejecutar la aplicación.
+- **`pom.xml` (o `build.gradle`):** Este archivo gestiona las dependencias y el ciclo de vida del proyecto. En el caso de Maven, `pom.xml` define las dependencias, como Spring Web, así como plugins para construir y ejecutar la aplicación.
+  
+- **`application.properties` (o `application.yml`):** Este archivo contiene la configuración de la aplicación, como el puerto del servidor, detalles de la base de datos, y ajustes de logs.
+  
+- **`src/main/java`:** Aquí reside el código fuente de la aplicación, incluyendo controladores, servicios y repositorios. La clase principal con la anotación `@SpringBootApplication` también se encuentra aquí.
+  
+- **`src/main/resources`:** Contiene recursos como plantillas Thymeleaf, archivos estáticos (CSS, JS), y `application.properties`.
 
-`application.properties` (o `application.yml`)
-Este archivo contiene la configuración de la aplicación, como el puerto del servidor, detalles de la base de datos, y ajustes de logs.
-
-`src/main/java`
-Aquí reside el código fuente de la aplicación, incluyendo controladores, servicios y repositorios. La clase principal con la anotación @SpringBootApplication también se encuentra aquí.
-
-`src/main/resources`
-Contiene recursos como plantillas Thymeleaf, archivos estáticos (CSS, JS), y `application.properties`.
-
-`src/test/java`
-Esta carpeta alberga las pruebas unitarias y de integración, permitiendo verificar el correcto funcionamiento de la aplicación.
+- **`src/test/java`:** Esta carpeta alberga las pruebas unitarias y de integración, permitiendo verificar el correcto funcionamiento de la aplicación.
 
 ### 4.2 Clase Principal
 
@@ -153,15 +148,11 @@ spring.datasource.username=myshopuser
 spring.datasource.password=mypassword
 spring.datasource.driverClassName=com.mysql.jdbc.Driver
 ```
-Hay que tener en cuenta que la propiedad spring.jpa.hibernate.ddl-auto se utiliza para que la base de datos se genere automáticamente en cada arranque de la aplicación. Esto nos interesará cuando estemos en desarrollo pero no cuando queramos desplegarla en producción. Por lo que tendremos que tener cuidado y controlar el valor de dicha propiedad.
+Hay que tener en cuenta que la propiedad `spring.jpa.hibernate.ddl-auto` se utiliza para que la base de datos se genere automáticamente en cada arranque de la aplicación. Esto nos interesará cuando estemos en desarrollo pero no cuando queramos desplegarla en producción.
 
-none: Para indicar que no queremos que genere la base de datos
-update: Si queremos que la genere de nuevo en cada arranque
-create: Si queremos que la cree pero que no la genere de nuevo si ya existe
-
-Cambia el puerto por defecto de 8080 a 8081.
-
-Por último, establecemos la conexión con nuestra base de datos
+- `none`: Para indicar que no queremos que genere la base de datos.
+- `update`: Si queremos que la genere de nuevo en cada arranque.
+- `create`: Si queremos que la cree pero que no la genere de nuevo si ya existe.
 
 ---
 
@@ -193,15 +184,18 @@ Abre un navegador web y accede a [http://localhost:8080](http://localhost:8080).
 ## Ejercicios
 
 1. **Personaliza el Mensaje de Inicio:**
+    - Investiga sobre los módulos que tiene Spring y realiza una breve descripción de los más importantes.
+
+2. **Personaliza el Mensaje de Inicio:**
 
    - Modifica el archivo `application.properties` para añadir un banner personalizado al iniciar la aplicación.
    - **Pista:** Usa la propiedad `spring.banner.location`.
 
-2. **Cambio de Puerto:**
+3. **Cambio de Puerto:**
 
    - Cambia el puerto de la aplicación a `9090` y verifica que la aplicación responde en el nuevo puerto.
 
-3. **Creación de un Controlador Simple:**
+4. **Creación de un Controlador Simple:**
 
    - Crea una clase `ControladorSaludo` en el paquete `com.ejemplo.demo`.
    - Define un método que responda a la ruta `/saludo` y que retorne el texto "¡Hola, Spring Boot!".
