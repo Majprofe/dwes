@@ -4,6 +4,14 @@ Apuntes del módulo de "Desarrollo Web en Entorno Servidor" de 2º curso del CFG
 ## Contenidos
 - [UD0 - Introducción y conceptos básicos](./UD0-Introduccion/README.md)
 - [UD1 - Arquitecturas y tecnologías en la programación web](./UD1-Arquitecturasytecnologias.md)
+- [UD2: Introducción a Spring Boot](./UD2-Introduccion-a-spring-boot.md)
+- UD3: Controladores y rutas
+- UD4: Gestión de datos con Spring Data JPA
+- UD5: Servicios y lógica de negocio
+- UD6: Seguridad con Spring Security
+- UD7: Gestión de errores y excepciones
+- UD8: Testing
+- UD9: Despliegue y producción
 
 ## Ejercicios
 Accede a los **[ejercicios y retos](./ejercicios.md)** propuestos del módulo DWES.

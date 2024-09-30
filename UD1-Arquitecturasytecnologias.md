@@ -239,8 +239,9 @@ Las **APIs RESTful** son interfaces que siguen el estilo arquitectónico REST (R
 
 4. **Análisis de una API RESTful:**
 
-   - Escoge una API pública (por ejemplo, [GitHub API](https://docs.github.com/en/rest)).
-   - Describe cómo implementa los principios de REST.
+   - Escoge una API pública (por ejemplo, [GitHub public APIs](https://github.com/public-apis/public-apis)).
+   - Explora el funcionamiento de los diferentes endpoints de la API REST.
    - Identifica los recursos disponibles y los métodos HTTP soportados.
+   - Ejemplo de [swagger](https://superset.apache.org/docs/api/) con los diferentes endpoints y métodos utilizados
 
 ---
