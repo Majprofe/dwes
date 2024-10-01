@@ -46,8 +46,8 @@ El **Patrón MVC (Modelo-Vista-Controlador)** es un patrón de arquitectura de s
 ### 2.1 Componentes de Spring MVC
 
 - **Modelo:** Objetos Java que representan los datos.
+- **Controlador:** Clases anotadas que manejan las solicitudes HTTP y devuelven respuestas, hace de intermediario entre el modelo y la vista.
 - **Vista:** Plantillas que generan la interfaz de usuario (por ejemplo, Thymeleaf, JSP).
-- **Controlador:** Clases anotadas que manejan las solicitudes HTTP y devuelven respuestas.
 
 <img src="imagenes/UD3/spring_mvc_architecture.png" alt="Arquitectura Spring MVC" width="600"/>
 
@@ -59,9 +59,41 @@ El **Patrón MVC (Modelo-Vista-Controlador)** es un patrón de arquitectura de s
 
 En Spring Boot, un controlador es una clase anotada con `@Controller` o `@RestController`.
 
-**Ejemplo de Controlador Simple:**
+**Ejemplo de Controlador con Modelo:**
 
 ```java
+// Modelo: Producto
+package com.ejemplo.demo;
+
+public class Producto {
+    private String nombre;
+    private double precio;
+
+    // Constructor
+    public Producto(String nombre, double precio) {
+        this.nombre = nombre;
+        this.precio = precio;
+    }
+
+    // Getters y Setters
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+}
+
+// Controlador: ProductoController
 package com.ejemplo.demo;
 
 import org.springframework.stereotype.Controller;
@@ -69,20 +101,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class HolaMundoController {
+public class ProductoController {
 
-    @GetMapping("/hola")
-    public String holaMundo(Model model) {
-        model.addAttribute("mensaje", "¡Hola, Mundo!");
-        return "saludo";
+    @GetMapping("/producto")
+    public String verProducto(Model model) {
+        Producto producto = new Producto("Camiseta", 19.99);
+        model.addAttribute("producto", producto);
+        return "detalleProducto"; // Retorna una vista llamada "detalleProducto.html"
     }
 }
 ```
 
 ### 3.2 Anotaciones Comunes
 
-- `@Controller`: Indica que la clase es un controlador.
-- `@RestController`: Combina `@Controller` y `@ResponseBody`, apropiado para APIs REST.
+- `@Controller`: Indica que la clase es un controlador, estos métodos devuelven vistas.
+- `@RestController`: Combina `@Controller` y `@ResponseBody`, apropiado para APIs REST, que devuelven datos (JSON o XML).
 - `@GetMapping`, `@PostMapping`, `@PutMapping`, `@DeleteMapping`: Especifican el método HTTP y la ruta para el manejo de solicitudes.
 
 ---
@@ -92,13 +125,12 @@ public class HolaMundoController {
 ### 4.1 Anotaciones de Mapeo
 
 - **`@RequestMapping`**: Define rutas y métodos HTTP.
-  
+
   ```java
   @RequestMapping(value = "/usuarios", method = RequestMethod.GET)
   ```
 
 - **Atajos:**
-
   - `@GetMapping("/ruta")`
   - `@PostMapping("/ruta")`
   - `@PutMapping("/ruta")`
@@ -114,6 +146,7 @@ public class HolaMundoController {
       // Lógica para obtener usuario por ID
   }
   ```
+La llamada desde el cliente sería: `http://localhost:8080/usuarios/5`
 
 - **Parámetros de Consulta (Query Parameters):**
 
@@ -123,6 +156,7 @@ public class HolaMundoController {
       // Lógica de búsqueda
   }
   ```
+La llamada desde el cliente sería: `http://localhost:8080/buscar?q=camiseta`
 
 ---
 
@@ -156,23 +190,25 @@ Spring Boot incluye soporte para Thymeleaf por defecto cuando se agrega la depen
 
 - Las plantillas Thymeleaf deben ubicarse en `src/main/resources/templates/`.
 
-**Ejemplo de Plantilla `saludo.html`:**
+**Ejemplo de Plantilla `detalleProducto.html`:**
 
 ```html
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Saludo</title>
+    <title>Detalle Producto</title>
 </head>
 <body>
-    <h1 th:text="'Mensaje: ' + ${mensaje}"></h1>
+    <h1>Detalles del Producto</h1>
+    <p>Nombre: <span th:text="${producto.nombre}"></span></p>
+    <p>Precio: <span th:text="${producto.precio}"></span></p>
 </body>
 </html>
 ```
 
 ---
 
-## Pasando Datos entre Modelo y Vista
+## Pasando Datos entre Controlador y Vista
 
 En Spring MVC, los datos se pasan del controlador a la vista mediante el objeto `Model`.
 
@@ -181,9 +217,9 @@ En Spring MVC, los datos se pasan del controlador a la vista mediante el objeto 
 ```java
 @GetMapping("/producto")
 public String verProducto(Model model) {
-    Producto producto = servicioProducto.obtenerProducto();
+    Producto producto = new Producto("Camiseta", 19.99);
     model.addAttribute("producto", producto);
-    return "detalleProducto";
+    return "detalleProducto"; // Retorna una vista llamada "detalleProducto.html"
 }
 ```
 
@@ -199,19 +235,16 @@ En la plantilla `detalleProducto.html`, puedes acceder al objeto `producto`:
 ## Ejercicios
 
 1. **Creación de un Controlador y Vista:**
-
    - Crea un controlador que maneje la ruta `/bienvenida`.
    - Pasa un mensaje de bienvenida desde el controlador a la vista.
    - Crea una plantilla Thymeleaf que muestre el mensaje.
 
 2. **Manejo de Parámetros de Ruta:**
-
    - Crea una ruta que reciba el nombre de un usuario como parámetro: `/usuario/{nombre}`.
    - El controlador debe saludar al usuario por su nombre.
    - Muestra el saludo en una vista.
 
 3. **Lista de Elementos en una Vista:**
-
    - En el controlador, crea una lista de objetos (por ejemplo, productos, libros, etc.).
    - Pasa la lista al modelo.
    - En la vista, muestra la lista utilizando un bucle de Thymeleaf.
@@ -228,9 +261,7 @@ En la plantilla `detalleProducto.html`, puedes acceder al objeto `producto`:
    ```
 
 4. **Formulario y Manejo de Datos POST:**
-
    - Crea un formulario en una vista para agregar un nuevo elemento.
    - Configura el controlador para manejar la solicitud POST y recibir los datos.
    - Muestra una confirmación o agrega el elemento a una lista existente.
-
 ---
