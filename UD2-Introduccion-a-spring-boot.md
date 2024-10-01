@@ -183,7 +183,7 @@ Abre un navegador web y accede a [http://localhost:8080](http://localhost:8080).
 
 ## Ejercicios
 
-1. **Personaliza el Mensaje de Inicio:**
+1. **¿Qué es Spring?:**
     - Investiga sobre los módulos que tiene Spring y realiza una breve descripción de los más importantes.
 
 2. **Personaliza el Mensaje de Inicio:**
