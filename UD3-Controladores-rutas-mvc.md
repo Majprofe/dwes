@@ -234,17 +234,20 @@ En la plantilla `detalleProducto.html`, puedes acceder al objeto `producto`:
 
 ## Ejercicios
 
-1. **Creación de un Controlador y Vista:**
+1. **Arquitectura Hexagonal**
+    - Busca información sobre la arquitectura hexagonal y realiza un resumen de la misma.
+
+2. **Creación de un Controlador y Vista:**
    - Crea un controlador que maneje la ruta `/bienvenida`.
    - Pasa un mensaje de bienvenida desde el controlador a la vista.
    - Crea una plantilla Thymeleaf que muestre el mensaje.
 
-2. **Manejo de Parámetros de Ruta:**
+3. **Manejo de Parámetros de Ruta:**
    - Crea una ruta que reciba el nombre de un usuario como parámetro: `/usuario/{nombre}`.
    - El controlador debe saludar al usuario por su nombre.
    - Muestra el saludo en una vista.
 
-3. **Lista de Elementos en una Vista:**
+4. **Lista de Elementos en una Vista:**
    - En el controlador, crea una lista de objetos (por ejemplo, productos, libros, etc.).
    - Pasa la lista al modelo.
    - En la vista, muestra la lista utilizando un bucle de Thymeleaf.
@@ -260,8 +263,9 @@ En la plantilla `detalleProducto.html`, puedes acceder al objeto `producto`:
    </ul>
    ```
 
-4. **Formulario y Manejo de Datos POST:**
+5. **Formulario y Manejo de Datos POST:**
    - Crea un formulario en una vista para agregar un nuevo elemento.
    - Configura el controlador para manejar la solicitud POST y recibir los datos.
    - Muestra una confirmación o agrega el elemento a una lista existente.
+
 ---
