@@ -465,96 +465,150 @@ public ResponseEntity<String> crearUsuario(@Valid @RequestBody Usuario usuario, 
 
 ## Ejemplo Práctico Ampliado
 
-Desarrollaremos una aplicación para gestionar una agencia de viajes, con las siguientes entidades:
-
-- **Cliente**
-- **Viaje**
-- **PaqueteTuristico**
-
+Desarrollaremos una aplicación para gestionar una biblioteca, con las siguientes entidades:
+- **Libro**
+- **Autor**
+- **Editorial**
 ### Entidades y Relaciones
-
-#### Entidad Cliente
-
+#### Entidad Autor
 ```java
 import javax.persistence.*;
 import java.util.List;
-
 @Entity
-public class Cliente {
-
+public class Autor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String nombre;
-    private String email;
-
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
-    private List<Viaje> viajes;
-
+    @ManyToMany(mappedBy = "autores")
+    private List<Libro> libros;
+    // Getters y Setters
+}
+```
+#### Entidad Editorial
+```java
+import javax.persistence.*;
+import java.util.List;
+@Entity
+public class Editorial {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nombre;
+    @OneToMany(mappedBy = "editorial")
+    private List<Libro> libros;
+    // Getters y Setters
+}
+```
+#### Entidad Libro
+```java
+import javax.persistence.*;
+import java.util.List;
+@Entity
+public class Libro {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String titulo;
     @ManyToMany
     @JoinTable(
-        name = "cliente_paquete",
-        joinColumns = @JoinColumn(name = "cliente_id"),
-        inverseJoinColumns = @JoinColumn(name = "paquete_id")
+        name = "libro_autor",
+        joinColumns = @JoinColumn(name = "libro_id"),
+        inverseJoinColumns = @JoinColumn(name = "autor_id")
     )
-    private List<PaqueteTuristico> paquetes;
-
-    // Getters y Setters
-}
-```
-
-#### Entidad Viaje
-
-```java
-import javax.persistence.*;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
-@Entity
-public class Viaje {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String destino;
-    private LocalDate fechaSalida;
-    private LocalDate fechaRegreso;
-    private BigDecimal precio;
-
+    private List<Autor> autores;
     @ManyToOne
-    @JoinColumn(name = "cliente_id")
-    private Cliente cliente;
-
+    @JoinColumn(name = "editorial_id")
+    private Editorial editorial;
     // Getters y Setters
 }
 ```
-
-#### Entidad PaqueteTuristico
-
+### Repositorios
 ```java
-import javax.persistence.*;
-import java.math.BigDecimal;
+public interface LibroRepository extends JpaRepository<Libro, Long> {
+    List<Libro> findByTituloContaining(String titulo);
+}
+public interface AutorRepository extends JpaRepository<Autor, Long> {
+}
+public interface EditorialRepository extends JpaRepository<Editorial, Long> {
+}
+```
+### Servicio con Transacciones y Consultas Personalizadas
+```java
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+@Service
+public class BibliotecaService {
+    @Autowired
+    private LibroRepository libroRepository;
+    @Autowired
+    private AutorRepository autorRepository;
+    @Autowired
+    private EditorialRepository editorialRepository;
+    @Transactional
+    public void agregarNuevoLibro(Libro libro, List<Autor> autores, Editorial editorial) {
+        // Guardar o actualizar la editorial
+        editorialRepository.save(editorial);
+        libro.setEditorial(editorial);
+        // Guardar o actualizar los autores
+        for (Autor autor : autores) {
+            autorRepository.save(autor);
+        }
+        libro.setAutores(autores);
+        // Guardar el libro
+        libroRepository.save(libro);
+    }
+    public List<Libro> buscarLibrosPorTitulo(String titulo) {
+        return libroRepository.findByTituloContaining(titulo);
+    }
+}
+```
+### Controlador con Método Completado
+```java
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
-
-@Entity
-public class PaqueteTuristico {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String nombre;
-    private String descripcion;
-    private BigDecimal precioTotal;
-
-    @OneToMany(mappedBy = "paquete", cascade = CascadeType.ALL)
-    private List<Viaje> viajes;
-
-    @ManyToMany(mappedBy = "paquetes")
-    private List<Cliente> clientes;
-
+@RestController
+@RequestMapping("/biblioteca")
+public class BibliotecaController {
+    @Autowired
+    private BibliotecaService bibliotecaService;
+    @PostMapping("/libros")
+    public void agregarLibro(@RequestBody LibroDTO libroDTO) {
+        // Conversión de DTO a entidades
+        Libro libro = new Libro();
+        libro.setTitulo(libroDTO.getTitulo());
+        // Convertir lista de IDs de autores a entidades
+        List<Autor> autores = autorRepository.findAllById(libroDTO.getAutoresIds());
+        // Obtener o crear la editorial
+        Editorial editorial = editorialRepository.findById(libroDTO.getEditorialId())
+                .orElseGet(() -> {
+                    Editorial nuevaEditorial = new Editorial();
+                    nuevaEditorial.setNombre(libroDTO.getEditorialNombre());
+                    return nuevaEditorial;
+                });
+        // Llamada al servicio
+        bibliotecaService.agregarNuevoLibro(libro, autores, editorial);
+    }
+    @GetMapping("/libros")
+    public List<Libro> buscarLibros(@RequestParam String titulo) {
+        return bibliotecaService.buscarLibrosPorTitulo(titulo);
+    }
+}
+```
+#### Explicación del Método `agregarLibro`
+- **Conversión de `LibroDTO` a entidades:**
+  - Se crea una instancia de `Libro` y se asigna el título.
+  - Se obtienen los autores a partir de sus IDs usando `autorRepository`.
+  - Se busca la editorial por ID; si no existe, se crea una nueva.
+- **Llamada al servicio:**
+  - Se llama al método `agregarNuevoLibro` del servicio `BibliotecaService`, pasando las entidades correspondientes.
+#### Definición de `LibroDTO`
+```java
+public class LibroDTO {
+    private String titulo;
+    private List<Long> autoresIds;
+    private Long editorialId;
+    private String editorialNombre; // En caso de que la editorial no exista
     // Getters y Setters
 }
 ```
