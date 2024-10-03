@@ -38,9 +38,8 @@ JPA es una especificación de Java que define cómo manejar datos relacionales e
 - **Extensibilidad**: Permite crear consultas personalizadas fácilmente.
 - **Integración**: Se integra perfectamente con otros módulos de Spring.
 
-![Spring Data JPA](https://www.baeldung.com/wp-content/uploads/2019/10/Spring-Data-JPA.png)
+<img src="imagenes/UD4/springdata_jpa.png" alt="Spring Data" width="600"/>
 
-*Figura 1: Logo de Spring Data JPA*
 
 ---
 
