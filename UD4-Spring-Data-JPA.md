@@ -666,8 +666,6 @@ public class LibroDTO {
 
 ## Ejercicio 1: Configuración Inicial
 
-**Objetivo**: Configurar un proyecto Spring Boot con Spring Data JPA y H2 como base de datos.
-
 ### Tareas:
 1. Crea un nuevo proyecto Spring Boot.
 2. Incluye las dependencias necesarias en el `pom.xml`.
@@ -676,8 +674,6 @@ public class LibroDTO {
 ---
 
 ## Ejercicio 2: Definición de Entidades y Repositorios
-
-**Objetivo**: Definir entidades y repositorios básicos.
 
 ### Tareas:
 1. Crea una entidad `Cliente` con los siguientes campos:
@@ -690,8 +686,6 @@ public class LibroDTO {
 ---
 
 ## Ejercicio 3: Crear las entidades Viaje y PaqueteTuristico y relaciones
-
-**Objetivo**: Ampliar el modelo de datos con dos nuevas entidades y establecer relaciones entre ellas.
 
 ### Tareas:
 1. Crea una entidad `Viaje` con los siguientes campos:
@@ -715,8 +709,6 @@ public class LibroDTO {
 
 ## Ejercicio 4: CRUD de Viaje
 
-**Objetivo**: Implementar un CRUD completo para la entidad `Viaje`.
-
 ### Tareas:
 1. Crea un controlador que permita realizar operaciones CRUD sobre `Viaje`.
     - Crear un nuevo viaje.
@@ -729,8 +721,6 @@ public class LibroDTO {
 
 ## Ejercicio 5: Búsqueda de viajes por destino o rango de precios
 
-**Objetivo**: Permitir la búsqueda de viajes según distintos criterios.
-
 ### Tareas:
 1. Implementa un método en el repositorio `ViajeRepository` para buscar viajes por destino.
 2. Implementa un método en el repositorio para buscar viajes dentro de un rango de precios.
@@ -740,8 +730,6 @@ public class LibroDTO {
 
 ## Ejercicio 6: Asignación de paquetes turísticos a clientes
 
-**Objetivo**: Permitir la asignación de un paquete turístico a un cliente.
-
 ### Tareas:
 1. Crea un controlador que permita asignar un `PaqueteTuristico` a un `Cliente`.
 2. Implementa una funcionalidad para mostrar los detalles de un `PaqueteTuristico` junto con los viajes incluidos en él.
@@ -750,8 +738,6 @@ public class LibroDTO {
 ---
 
 ## Ejercicio 7: Calcular el precio total de los viajes de un cliente
-
-**Objetivo**: Implementar una funcionalidad que calcule el precio total de todos los viajes reservados por un cliente.
 
 ### Tareas:
 1. En el servicio de `Cliente`, implementa un método que calcule el precio total de todos los viajes reservados por un cliente.
