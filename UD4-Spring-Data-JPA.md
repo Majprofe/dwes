@@ -17,6 +17,10 @@
 - [Gestión de Transacciones](#gestión-de-transacciones)
   - [Importancia de las Transacciones](#importancia-de-las-transacciones)
   - [Uso de `@Transactional`](#uso-de-transactional)
+- [Gestión de Errores y Excepciones](#gestión-de-errores-y-excepciones)
+  - [Manejo de Excepciones con `@ExceptionHandler`](#manejo-de-excepciones-con-exceptionhandler)
+  - [Personalización de Errores Globales](#personalización-de-errores-globales)
+  - [Validación y Excepciones](#validación-y-excepciones)
 - [Ejemplo Práctico Ampliado](#ejemplo-práctico-ampliado)
 - [Ejercicios Propuestos](#ejercicios-propuestos)
 - [Conclusión](#conclusión)
@@ -39,7 +43,6 @@ JPA es una especificación de Java que define cómo manejar datos relacionales e
 - **Integración**: Se integra perfectamente con otros módulos de Spring.
 
 <img src="imagenes/UD4/springdata_jpa.png" alt="Spring Data" width="600"/>
-
 
 ---
 
@@ -248,10 +251,6 @@ Si necesitas ejecutar una consulta SQL nativa, puedes hacerlo:
 Usuario buscarPorEmailNativo(String email);
 ```
 
-### Resolución con JPA
-
-Muchas consultas personalizadas pueden resolverse utilizando los métodos derivados o JPQL proporcionados por JPA, sin necesidad de escribir SQL nativo. Esto es preferible ya que mantiene la independencia de la base de datos y aprovecha el mapeo objeto-relacional.
-
 ---
 
 ## Relaciones entre Entidades
@@ -296,10 +295,6 @@ public class Usuario {
 }
 ```
 
-- **Relación:** Un usuario puede tener **muchos pedidos** (One-to-Many).
-- **`mappedBy = "usuario"`:** Indica que el campo `usuario` en `Pedido` es el propietario de la relación.
-- **`cascade = CascadeType.ALL`:** Las operaciones en `Usuario` se propagan a `Pedido`.
-
 ##### Entidad Pedido
 
 ```java
@@ -331,13 +326,6 @@ public class Pedido {
 }
 ```
 
-- **Relación con Usuario:**
-  - **Many-to-One:** Muchos pedidos pueden pertenecer a un usuario.
-  - **`@JoinColumn(name = "usuario_id")`:** Define la clave foránea en la tabla `pedido`.
-- **Relación con Producto:**
-  - **Many-to-Many:** Un pedido puede contener múltiples productos y un producto puede estar en múltiples pedidos.
-  - **`@JoinTable`:** Define la tabla intermedia `pedido_producto` para la relación muchos a muchos.
-
 ##### Entidad Producto
 
 ```java
@@ -360,50 +348,6 @@ public class Producto {
     // Getters y Setters
 }
 ```
-
-- **Relación con Pedido:**
-  - **Many-to-Many:** Relación inversa al Many-to-Many definido en `Pedido`.
-  - **`mappedBy = "productos"`:** Indica que el propietario de la relación es el campo `productos` en `Pedido`.
-
-#### Ejemplo de Uso
-
-##### Crear un Usuario, Productos y un Pedido
-
-```java
-// Crear productos
-Producto producto1 = new Producto();
-producto1.setNombre("Laptop");
-producto1.setPrecio(1200.0);
-
-Producto producto2 = new Producto();
-producto2.setNombre("Smartphone");
-producto2.setPrecio(800.0);
-
-// Guardar productos
-productoRepository.save(producto1);
-productoRepository.save(producto2);
-
-// Crear usuario
-Usuario usuario = new Usuario();
-usuario.setNombre("María");
-
-// Crear pedido
-Pedido pedido = new Pedido();
-pedido.setFecha("2023-10-15");
-pedido.setUsuario(usuario);
-pedido.setProductos(Arrays.asList(producto1, producto2));
-
-// Asociar pedido al usuario
-usuario.setPedidos(Arrays.asList(pedido));
-
-// Guardar usuario y pedido gracias a la cascada
-usuarioRepository.save(usuario);
-```
-
-#### Notas Importantes
-
-- **Cascada:** Al guardar el `usuario`, gracias a `cascade = CascadeType.ALL`, también se guardan los `pedidos` asociados.
-- **Relaciones Bidireccionales:** Es importante establecer ambas partes de la relación para mantener la coherencia.
 
 ---
 
@@ -453,208 +397,163 @@ public class PedidoService {
 }
 ```
 
-- **`@Transactional`:** Indica que el método `procesarPedido` debe ejecutarse dentro de una transacción.
-- **Si ocurre una excepción no controlada dentro del método, la transacción se revierte.**
+---
+
+## Gestión de Errores y Excepciones
+
+Es fundamental manejar adecuadamente los errores y excepciones en una aplicación para proporcionar una mejor experiencia de usuario y facilitar la depuración.
+
+### Manejo de Excepciones con `@ExceptionHandler`
+
+La anotación `@ExceptionHandler` permite capturar y gestionar excepciones de forma centralizada en los controladores.
+
+#### Ejemplo:
+
+```java
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.http.ResponseEntity;
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(404).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGeneralException(Exception ex) {
+        return ResponseEntity.status(500).body("Error interno del servidor");
+    }
+}
+```
+
+### Personalización de Errores Globales
+
+Mediante el uso de `@ControllerAdvice`, podemos definir cómo la aplicación debería responder a ciertos tipos de excepciones.
+
+#### Ejemplo de Excepción Personalizada
+
+```java
+public class ResourceNotFoundException extends RuntimeException {
+
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+}
+```
+
+### Validación y Excepciones
+
+Podemos utilizar anotaciones de validación (como `@NotNull`, `@Size`, etc.) en nuestras entidades y capturar errores de validación con `@Valid` y `BindingResult`.
+
+#### Ejemplo:
+
+```java
+@PostMapping("/usuarios")
+public ResponseEntity<String> crearUsuario(@Valid @RequestBody Usuario usuario, BindingResult result) {
+    if (result.hasErrors()) {
+        return ResponseEntity.status(400).body("Error en los datos proporcionados");
+    }
+    usuarioRepository.save(usuario);
+    return ResponseEntity.status(201).body("Usuario creado exitosamente");
+}
+```
 
 ---
 
 ## Ejemplo Práctico Ampliado
 
-Desarrollaremos una aplicación para gestionar una biblioteca, con las siguientes entidades:
+Desarrollaremos una aplicación para gestionar una agencia de viajes, con las siguientes entidades:
 
-- **Libro**
-- **Autor**
-- **Editorial**
+- **Cliente**
+- **Viaje**
+- **PaqueteTuristico**
 
 ### Entidades y Relaciones
 
-#### Entidad Autor
+#### Entidad Cliente
 
 ```java
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-public class Autor {
+public class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombre;
+    private String email;
 
-    @ManyToMany(mappedBy = "autores")
-    private List<Libro> libros;
-
-    // Getters y Setters
-}
-```
-
-#### Entidad Editorial
-
-```java
-import javax.persistence.*;
-import java.util.List;
-
-@Entity
-public class Editorial {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String nombre;
-
-    @OneToMany(mappedBy = "editorial")
-    private List<Libro> libros;
-
-    // Getters y Setters
-}
-```
-
-#### Entidad Libro
-
-```java
-import javax.persistence.*;
-import java.util.List;
-
-@Entity
-public class Libro {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String titulo;
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private List<Viaje> viajes;
 
     @ManyToMany
     @JoinTable(
-        name = "libro_autor",
-        joinColumns = @JoinColumn(name = "libro_id"),
-        inverseJoinColumns = @JoinColumn(name = "autor_id")
+        name = "cliente_paquete",
+        joinColumns = @JoinColumn(name = "cliente_id"),
+        inverseJoinColumns = @JoinColumn(name = "paquete_id")
     )
-    private List<Autor> autores;
-
-    @ManyToOne
-    @JoinColumn(name = "editorial_id")
-    private Editorial editorial;
+    private List<PaqueteTuristico> paquetes;
 
     // Getters y Setters
 }
 ```
 
-### Repositorios
+#### Entidad Viaje
 
 ```java
-public interface LibroRepository extends JpaRepository<Libro, Long> {
-    List<Libro> findByTituloContaining(String titulo);
-}
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
-public interface AutorRepository extends JpaRepository<Autor, Long> {
-}
+@Entity
+public class Viaje {
 
-public interface EditorialRepository extends JpaRepository<Editorial, Long> {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String destino;
+    private LocalDate fechaSalida;
+    private LocalDate fechaRegreso;
+    private BigDecimal precio;
+
+    @ManyToOne
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
+
+    // Getters y Setters
 }
 ```
 
-### Servicio con Transacciones y Consultas Personalizadas
+#### Entidad PaqueteTuristico
 
 ```java
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-@Service
-public class BibliotecaService {
-
-    @Autowired
-    private LibroRepository libroRepository;
-
-    @Autowired
-    private AutorRepository autorRepository;
-
-    @Autowired
-    private EditorialRepository editorialRepository;
-
-    @Transactional
-    public void agregarNuevoLibro(Libro libro, List<Autor> autores, Editorial editorial) {
-        // Guardar o actualizar la editorial
-        editorialRepository.save(editorial);
-        libro.setEditorial(editorial);
-
-        // Guardar o actualizar los autores
-        for (Autor autor : autores) {
-            autorRepository.save(autor);
-        }
-        libro.setAutores(autores);
-
-        // Guardar el libro
-        libroRepository.save(libro);
-    }
-
-    public List<Libro> buscarLibrosPorTitulo(String titulo) {
-        return libroRepository.findByTituloContaining(titulo);
-    }
-}
-```
-
-### Controlador con Método Completado
-
-```java
-import org.springframework.web.bind.annotation.*;
+import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.List;
 
-@RestController
-@RequestMapping("/biblioteca")
-public class BibliotecaController {
+@Entity
+public class PaqueteTuristico {
 
-    @Autowired
-    private BibliotecaService bibliotecaService;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @PostMapping("/libros")
-    public void agregarLibro(@RequestBody LibroDTO libroDTO) {
-        // Conversión de DTO a entidades
-        Libro libro = new Libro();
-        libro.setTitulo(libroDTO.getTitulo());
+    private String nombre;
+    private String descripcion;
+    private BigDecimal precioTotal;
 
-        // Convertir lista de IDs de autores a entidades
-        List<Autor> autores = autorRepository.findAllById(libroDTO.getAutoresIds());
+    @OneToMany(mappedBy = "paquete", cascade = CascadeType.ALL)
+    private List<Viaje> viajes;
 
-        // Obtener o crear la editorial
-        Editorial editorial = editorialRepository.findById(libroDTO.getEditorialId())
-                .orElseGet(() -> {
-                    Editorial nuevaEditorial = new Editorial();
-                    nuevaEditorial.setNombre(libroDTO.getEditorialNombre());
-                    return nuevaEditorial;
-                });
-
-        // Llamada al servicio
-        bibliotecaService.agregarNuevoLibro(libro, autores, editorial);
-    }
-
-    @GetMapping("/libros")
-    public List<Libro> buscarLibros(@RequestParam String titulo) {
-        return bibliotecaService.buscarLibrosPorTitulo(titulo);
-    }
-}
-```
-
-#### Explicación del Método `agregarLibro`
-
-- **Conversión de `LibroDTO` a entidades:**
-  - Se crea una instancia de `Libro` y se asigna el título.
-  - Se obtienen los autores a partir de sus IDs usando `autorRepository`.
-  - Se busca la editorial por ID; si no existe, se crea una nueva.
-- **Llamada al servicio:**
-  - Se llama al método `agregarNuevoLibro` del servicio `BibliotecaService`, pasando las entidades correspondientes.
-
-#### Definición de `LibroDTO`
-
-```java
-public class LibroDTO {
-    private String titulo;
-    private List<Long> autoresIds;
-    private Long editorialId;
-    private String editorialNombre; // En caso de que la editorial no exista
+    @ManyToMany(mappedBy = "paquetes")
+    private List<Cliente> clientes;
 
     // Getters y Setters
 }
@@ -664,7 +563,9 @@ public class LibroDTO {
 
 ## Ejercicios Propuestos
 
-## Ejercicio 1: Configuración Inicial
+### Ejercicio 1: Configuración Inicial
+
+**Objetivo**: Configurar un proyecto Spring Boot con Spring Data JPA y H2 como base de datos.
 
 ### Tareas:
 1. Crea un nuevo proyecto Spring Boot.
@@ -673,7 +574,9 @@ public class LibroDTO {
 
 ---
 
-## Ejercicio 2: Definición de Entidades y Repositorios
+### Ejercicio 2: Definición de Entidades y Repositorios
+
+**Objetivo**: Definir entidades y repositorios básicos.
 
 ### Tareas:
 1. Crea una entidad `Cliente` con los siguientes campos:
@@ -685,7 +588,9 @@ public class LibroDTO {
 
 ---
 
-## Ejercicio 3: Crear las entidades Viaje y PaqueteTuristico y relaciones
+### Ejercicio 3: Crear las entidades Viaje y PaqueteTuristico y relaciones
+
+**Objetivo**: Ampliar el modelo de datos con dos nuevas entidades y establecer relaciones entre ellas.
 
 ### Tareas:
 1. Crea una entidad `Viaje` con los siguientes campos:
@@ -707,7 +612,9 @@ public class LibroDTO {
 
 ---
 
-## Ejercicio 4: CRUD de Viaje
+### Ejercicio 4: CRUD de Viaje
+
+**Objetivo**: Implementar un CRUD completo para la entidad `Viaje`.
 
 ### Tareas:
 1. Crea un controlador que permita realizar operaciones CRUD sobre `Viaje`.
@@ -719,7 +626,9 @@ public class LibroDTO {
 
 ---
 
-## Ejercicio 5: Búsqueda de viajes por destino o rango de precios
+### Ejercicio 5: Búsqueda de viajes por destino o rango de precios
+
+**Objetivo**: Permitir la búsqueda de viajes según distintos criterios.
 
 ### Tareas:
 1. Implementa un método en el repositorio `ViajeRepository` para buscar viajes por destino.
@@ -728,7 +637,9 @@ public class LibroDTO {
 
 ---
 
-## Ejercicio 6: Asignación de paquetes turísticos a clientes
+### Ejercicio 6: Asignación de paquetes turísticos a clientes
+
+**Objetivo**: Permitir la asignación de un paquete turístico a un cliente.
 
 ### Tareas:
 1. Crea un controlador que permita asignar un `PaqueteTuristico` a un `Cliente`.
@@ -737,7 +648,9 @@ public class LibroDTO {
 
 ---
 
-## Ejercicio 7: Calcular el precio total de los viajes de un cliente
+### Ejercicio 7: Calcular el precio total de los viajes de un cliente
+
+**Objetivo**: Implementar una funcionalidad que calcule el precio total de todos los viajes reservados por un cliente.
 
 ### Tareas:
 1. En el servicio de `Cliente`, implementa un método que calcule el precio total de todos los viajes reservados por un cliente.
