@@ -252,52 +252,69 @@ Usuario buscarPorEmailNativo(String email);
 
 ## Relaciones entre Entidades
 
-Las entidades en JPA pueden tener relaciones entre sí. Es importante mapear estas relaciones correctamente para reflejar las asociaciones en la base de datos.
+En JPA, las entidades pueden tener relaciones entre sí. Estas relaciones reflejan cómo los datos en diferentes tablas de la base de datos están vinculados entre ellos. Spring Data JPA proporciona anotaciones que nos permiten modelar estas relaciones de una manera sencilla. Los tipos principales de relaciones son:
 
-### Tipos de Relaciones
+1. **One-to-One (Uno a Uno)**: Un registro de una tabla está vinculado a un único registro de otra tabla.
+2. **One-to-Many (Uno a Muchos) / Many-to-One (Muchos a Uno)**: Un registro de una tabla está vinculado a múltiples registros de otra tabla, y viceversa.
+3. **Many-to-Many (Muchos a Muchos)**: Múltiples registros de una tabla están vinculados a múltiples registros de otra tabla.
 
-1. **One-to-One (Uno a Uno):** Un registro de una tabla se asocia con un único registro de otra tabla.
-2. **One-to-Many (Uno a Muchos) y Many-to-One (Muchos a Uno):** Un registro de una tabla se asocia con múltiples registros de otra tabla, y viceversa.
-3. **Many-to-Many (Muchos a Muchos):** Múltiples registros de una tabla se asocian con múltiples registros de otra tabla.
+### Anotaciones para Mapear Relaciones en JPA
 
-### Ejemplo Completo de Relaciones
+- **`@OneToOne`**: Esta anotación define una relación de uno a uno entre dos entidades. Por ejemplo, un usuario puede tener un solo perfil y un perfil puede pertenecer a un solo usuario.
+- **`@OneToMany`**: Define una relación donde una entidad está vinculada a muchas otras. Por ejemplo, un cliente puede tener varios pedidos.
+- **`@ManyToOne`**: Es la relación inversa de `@OneToMany`, donde muchos registros de una entidad pueden estar vinculados a uno solo de otra entidad. Por ejemplo, muchos pedidos pueden pertenecer a un único cliente.
+- **`@ManyToMany`**: Define una relación donde múltiples registros de una entidad están relacionados con múltiples registros de otra entidad. Por ejemplo, un libro puede ser escrito por varios autores y un autor puede escribir varios libros.
+- **`@JoinColumn`**: Utilizada para especificar la columna que actúa como clave foránea en la base de datos para establecer la relación.
+- **`@JoinTable`**: En una relación `ManyToMany`, se utiliza para definir una tabla intermedia que contiene las claves foráneas de ambas tablas.
 
-Supongamos que estamos modelando una aplicación de comercio electrónico con las siguientes entidades:
+### Explicación Detallada de Cada Anotación
 
-- **Usuario**
-- **Pedido**
-- **Producto**
-
-#### Definición de Entidades y Relaciones
-
-##### Entidad Usuario
+#### **@OneToOne**
+Esta anotación se utiliza cuando un registro de una entidad está relacionado con un único registro de otra entidad. Por ejemplo, si modelamos un sistema donde cada usuario tiene un perfil único, lo haríamos de la siguiente manera:
 
 ```java
-import javax.persistence.*;
-import java.util.List;
-
 @Entity
 public class Usuario {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     private String nombre;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    private List<Pedido> pedidos;
-
+    @OneToOne
+    @JoinColumn(name = "perfil_id")  // Clave foránea en la tabla Usuario
+    private Perfil perfil;
+    
     // Getters y Setters
 }
 ```
 
-##### Entidad Pedido
+En este caso, la tabla `Usuario` tendrá una columna `perfil_id` que actúa como clave foránea para relacionar al usuario con un perfil en la tabla `Perfil`.
+
+#### **@OneToMany y @ManyToOne**
+Estas anotaciones definen relaciones donde una entidad puede tener varios registros relacionados con otra. En una relación `OneToMany`, el lado "uno" de la relación suele ser propietario de la relación, y en la base de datos se define mediante una clave foránea en la entidad "muchos". Por ejemplo, un cliente puede tener muchos pedidos:
 
 ```java
-import javax.persistence.*;
-import java.util.List;
+@Entity
+public class Cliente {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String nombre;
 
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private List<Pedido> pedidos;
+    
+    // Getters y Setters
+}
+```
+
+Y en la entidad `Pedido`, especificamos la relación inversa con `@ManyToOne`:
+
+```java
 @Entity
 public class Pedido {
 
@@ -305,46 +322,63 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fecha;
+    private String descripcion;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
-
-    @ManyToMany
-    @JoinTable(
-        name = "pedido_producto",
-        joinColumns = @JoinColumn(name = "pedido_id"),
-        inverseJoinColumns = @JoinColumn(name = "producto_id")
-    )
-    private List<Producto> productos;
-
+    @JoinColumn(name = "cliente_id")  // Clave foránea en la tabla Pedido
+    private Cliente cliente;
+    
     // Getters y Setters
 }
 ```
 
-##### Entidad Producto
+Aquí, un cliente puede tener múltiples pedidos, y cada pedido está relacionado con un solo cliente mediante la columna `cliente_id` en la tabla `Pedido`.
+
+#### **@ManyToMany**
+Esta anotación se utiliza para modelar relaciones donde varios registros de una entidad están relacionados con varios registros de otra entidad. Un ejemplo común es la relación entre libros y autores: un libro puede tener varios autores, y un autor puede haber escrito varios libros. Para mapear esta relación, necesitamos una tabla intermedia.
 
 ```java
-import javax.persistence.*;
-import java.util.List;
-
 @Entity
-public class Producto {
+public class Libro {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String titulo;
+
+    @ManyToMany
+    @JoinTable(
+        name = "libro_autor",  // Nombre de la tabla intermedia
+        joinColumns = @JoinColumn(name = "libro_id"),  // Clave foránea de la entidad Libro
+        inverseJoinColumns = @JoinColumn(name = "autor_id")  // Clave foránea de la entidad Autor
+    )
+    private List<Autor> autores;
+    
+    // Getters y Setters
+}
+```
+
+En la entidad `Autor`, también especificamos la relación:
+
+```java
+@Entity
+public class Autor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombre;
-    private Double precio;
 
-    @ManyToMany(mappedBy = "productos")
-    private List<Pedido> pedidos;
-
+    @ManyToMany(mappedBy = "autores")  // Inverso de la relación ManyToMany
+    private List<Libro> libros;
+    
     // Getters y Setters
 }
 ```
+
+Aquí, la tabla intermedia `libro_autor` almacenará los IDs de ambos `Libro` y `Autor` para representar las relaciones entre ellos.
 
 ---
 
