@@ -647,7 +647,7 @@ public class LibroDTO {
     - `descripcion` (String)
     - `precioTotal` (float)
 3. Establece las relaciones:
-    - Un `Cliente` puede tener muchos `Viaje`s (relación @OneToMany).
+    - Un `Cliente` puede tener muchos `Viajes` (relación @OneToMany).
     - Un `PaqueteTuristico` puede tener varios `Viaje`s (relación @OneToMany).
     - Un `Cliente` puede reservar varios `PaqueteTuristico`s y un `PaqueteTuristico` puede ser reservado por varios clientes (relación @ManyToMany).
 4. Genera las tablas correspondientes en la base de datos utilizando JPA.
