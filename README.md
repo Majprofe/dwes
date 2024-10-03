@@ -9,6 +9,7 @@ Apuntes del módulo de "Desarrollo Web en Entorno Servidor" de 2º curso del CFG
 - [UD4: Gestión de datos con Spring Data JPA y gestión de errores](./UD4-Spring-Data-JPA.md)
 - UD5: Servicios y lógica de negocio
 - UD6: Seguridad con Spring Security
+- UD7: Gestión de errores y excepciones
 - UD7: Testing
 - UD8: Despliegue y producción
 

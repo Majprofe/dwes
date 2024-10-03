@@ -17,10 +17,7 @@
 - [Gestión de Transacciones](#gestión-de-transacciones)
   - [Importancia de las Transacciones](#importancia-de-las-transacciones)
   - [Uso de `@Transactional`](#uso-de-transactional)
-- [Gestión de Errores y Excepciones](#gestión-de-errores-y-excepciones)
-  - [Manejo de Excepciones con `@ExceptionHandler`](#manejo-de-excepciones-con-exceptionhandler)
-  - [Personalización de Errores Globales](#personalización-de-errores-globales)
-  - [Validación y Excepciones](#validación-y-excepciones)
+- [Lanzamiento de Excepciones](#lanzamiento-de-excepciones)
 - [Ejemplo Práctico Ampliado](#ejemplo-práctico-ampliado)
 - [Ejercicios Propuestos](#ejercicios-propuestos)
 - [Conclusión](#conclusión)
@@ -203,7 +200,7 @@ public void obtenerUsuario(Long id) {
 
 ```java
 public void actualizarUsuario(Long id) {
-    Usuario usuario = usuarioRepository.findById(id).orElseThrow();
+    Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     usuario.setEmail("nuevoemail@example.com");
     usuarioRepository.save(usuario);
 }
@@ -399,67 +396,22 @@ public class PedidoService {
 
 ---
 
-## Gestión de Errores y Excepciones
+## Lanzamiento de Excepciones
 
-Es fundamental manejar adecuadamente los errores y excepciones en una aplicación para proporcionar una mejor experiencia de usuario y facilitar la depuración.
-
-### Manejo de Excepciones con `@ExceptionHandler`
-
-La anotación `@ExceptionHandler` permite capturar y gestionar excepciones de forma centralizada en los controladores.
+Cuando realizamos operaciones de actualización sobre una entidad, es posible que el objeto que intentamos modificar no exista en la base de datos. En estos casos, podemos lanzar una excepción personalizada, como `ResourceNotFoundException`.
 
 #### Ejemplo:
 
 ```java
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.http.ResponseEntity;
-
-@ControllerAdvice
-public class GlobalExceptionHandler {
-
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
-        return ResponseEntity.status(404).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception ex) {
-        return ResponseEntity.status(500).body("Error interno del servidor");
-    }
-}
-```
-
-### Personalización de Errores Globales
-
-Mediante el uso de `@ControllerAdvice`, podemos definir cómo la aplicación debería responder a ciertos tipos de excepciones.
-
-#### Ejemplo de Excepción Personalizada
-
-```java
-public class ResourceNotFoundException extends RuntimeException {
-
-    public ResourceNotFoundException(String message) {
-        super(message);
-    }
-}
-```
-
-### Validación y Excepciones
-
-Podemos utilizar anotaciones de validación (como `@NotNull`, `@Size`, etc.) en nuestras entidades y capturar errores de validación con `@Valid` y `BindingResult`.
-
-#### Ejemplo:
-
-```java
-@PostMapping("/usuarios")
-public ResponseEntity<String> crearUsuario(@Valid @RequestBody Usuario usuario, BindingResult result) {
-    if (result.hasErrors()) {
-        return ResponseEntity.status(400).body("Error en los datos proporcionados");
-    }
+public void actualizarUsuario(Long id, Usuario nuevosDatos) {
+    Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+    usuario.setNombre(nuevosDatos.getNombre());
+    usuario.setEmail(nuevosDatos.getEmail());
     usuarioRepository.save(usuario);
-    return ResponseEntity.status(201).body("Usuario creado exitosamente");
 }
 ```
+
+En este caso, si el usuario con el ID proporcionado no existe, se lanza una `ResourceNotFoundException` con un mensaje explicativo.
 
 ---
 
@@ -469,47 +421,68 @@ Desarrollaremos una aplicación para gestionar una biblioteca, con las siguiente
 - **Libro**
 - **Autor**
 - **Editorial**
+
 ### Entidades y Relaciones
+
 #### Entidad Autor
+
 ```java
 import javax.persistence.*;
 import java.util.List;
+
 @Entity
 public class Autor {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String nombre;
+
     @ManyToMany(mappedBy = "autores")
     private List<Libro> libros;
+
     // Getters y Setters
 }
 ```
+
 #### Entidad Editorial
+
 ```java
 import javax.persistence.*;
 import java.util.List;
+
 @Entity
 public class Editorial {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String nombre;
+
     @OneToMany(mappedBy = "editorial")
     private List<Libro> libros;
+
     // Getters y Setters
 }
 ```
+
 #### Entidad Libro
+
 ```java
 import javax.persistence.*;
 import java.util.List;
+
 @Entity
 public class Libro {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String titulo;
+
     @ManyToMany
     @JoinTable(
         name = "libro_autor",
@@ -517,68 +490,91 @@ public class Libro {
         inverseJoinColumns = @JoinColumn(name = "autor_id")
     )
     private List<Autor> autores;
+
     @ManyToOne
     @JoinColumn(name = "editorial_id")
     private Editorial editorial;
+
     // Getters y Setters
 }
 ```
+
 ### Repositorios
+
 ```java
 public interface LibroRepository extends JpaRepository<Libro, Long> {
     List<Libro> findByTituloContaining(String titulo);
 }
+
 public interface AutorRepository extends JpaRepository<Autor, Long> {
 }
+
 public interface EditorialRepository extends JpaRepository<Editorial, Long> {
 }
 ```
+
 ### Servicio con Transacciones y Consultas Personalizadas
+
 ```java
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class BibliotecaService {
+
     @Autowired
     private LibroRepository libroRepository;
+
     @Autowired
     private AutorRepository autorRepository;
+
     @Autowired
     private EditorialRepository editorialRepository;
+
     @Transactional
     public void agregarNuevoLibro(Libro libro, List<Autor> autores, Editorial editorial) {
         // Guardar o actualizar la editorial
         editorialRepository.save(editorial);
         libro.setEditorial(editorial);
+
         // Guardar o actualizar los autores
         for (Autor autor : autores) {
             autorRepository.save(autor);
         }
         libro.setAutores(autores);
+
         // Guardar el libro
         libroRepository.save(libro);
     }
+
     public List<Libro> buscarLibrosPorTitulo(String titulo) {
         return libroRepository.findByTituloContaining(titulo);
     }
 }
 ```
+
 ### Controlador con Método Completado
+
 ```java
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+
 @RestController
 @RequestMapping("/biblioteca")
 public class BibliotecaController {
+
     @Autowired
     private BibliotecaService bibliotecaService;
+
     @PostMapping("/libros")
     public void agregarLibro(@RequestBody LibroDTO libroDTO) {
         // Conversión de DTO a entidades
         Libro libro = new Libro();
         libro.setTitulo(libroDTO.getTitulo());
+
         // Convertir lista de IDs de autores a entidades
         List<Autor> autores = autorRepository.findAllById(libroDTO.getAutoresIds());
+
         // Obtener o crear la editorial
         Editorial editorial = editorialRepository.findById(libroDTO.getEditorialId())
                 .orElseGet(() -> {
@@ -586,29 +582,27 @@ public class BibliotecaController {
                     nuevaEditorial.setNombre(libroDTO.getEditorialNombre());
                     return nuevaEditorial;
                 });
+
         // Llamada al servicio
         bibliotecaService.agregarNuevoLibro(libro, autores, editorial);
     }
+
     @GetMapping("/libros")
     public List<Libro> buscarLibros(@RequestParam String titulo) {
         return bibliotecaService.buscarLibrosPorTitulo(titulo);
     }
 }
 ```
-#### Explicación del Método `agregarLibro`
-- **Conversión de `LibroDTO` a entidades:**
-  - Se crea una instancia de `Libro` y se asigna el título.
-  - Se obtienen los autores a partir de sus IDs usando `autorRepository`.
-  - Se busca la editorial por ID; si no existe, se crea una nueva.
-- **Llamada al servicio:**
-  - Se llama al método `agregarNuevoLibro` del servicio `BibliotecaService`, pasando las entidades correspondientes.
+
 #### Definición de `LibroDTO`
+
 ```java
 public class LibroDTO {
     private String titulo;
     private List<Long> autoresIds;
     private Long editorialId;
     private String editorialNombre; // En caso de que la editorial no exista
+
     // Getters y Setters
 }
 ```
