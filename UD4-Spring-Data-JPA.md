@@ -664,44 +664,98 @@ public class LibroDTO {
 
 ## Ejercicios Propuestos
 
-### Ejercicio 1: Configuración Inicial
+## Ejercicio 1: Configuración Inicial
 
-- **Objetivo:** Configurar un proyecto Spring Boot con Spring Data JPA y H2 como base de datos.
-- **Tareas:**
-  - Crea un nuevo proyecto Spring Boot.
-  - Incluye las dependencias necesarias en el `pom.xml`.
-  - Configura la conexión a la base de datos H2 en `application.properties`.
+**Objetivo**: Configurar un proyecto Spring Boot con Spring Data JPA y H2 como base de datos.
 
-### Ejercicio 2: Definición de Entidades y Repositorios
+### Tareas:
+1. Crea un nuevo proyecto Spring Boot.
+2. Incluye las dependencias necesarias en el `pom.xml`.
+3. Configura la conexión a la base de datos H2 en `application.properties`.
 
-- **Objetivo:** Definir entidades y repositorios básicos.
-- **Tareas:**
-  - Crea una entidad `Cliente` con campos `id`, `nombre`, `email`.
-  - Define el repositorio `ClienteRepository`.
-  - Implementa un servicio para realizar operaciones CRUD sobre `Cliente`.
+---
 
-### Ejercicio 3: Relaciones entre Entidades
+## Ejercicio 2: Definición de Entidades y Repositorios
 
-- **Objetivo:** Implementar relaciones One-to-Many y Many-to-Many.
-- **Tareas:**
-  - Crea las entidades `Autor`, `Libro` y `Editorial` como en el ejemplo.
-  - Establece las relaciones correspondientes entre ellas.
-  - Implementa métodos para agregar libros con sus autores y editoriales.
+**Objetivo**: Definir entidades y repositorios básicos.
 
-### Ejercicio 4: Consultas Personalizadas
+### Tareas:
+1. Crea una entidad `Cliente` con los siguientes campos:
+    - `id` (Long)
+    - `nombre` (String)
+    - `email` (String)
+2. Define el repositorio `ClienteRepository`.
+3. Implementa un servicio para realizar operaciones CRUD sobre `Cliente`.
 
-- **Objetivo:** Crear consultas personalizadas utilizando métodos derivados y la anotación `@Query`.
-- **Tareas:**
-  - En `LibroRepository`, añade un método para buscar libros por nombre de autor.
-  - Utiliza `@Query` para crear una consulta que busque libros publicados por una editorial específica.
+---
 
-### Ejercicio 5: Gestión de Transacciones y Manejo de Excepciones
+## Ejercicio 3: Crear las entidades Viaje y PaqueteTuristico y relaciones
 
-- **Objetivo:** Implementar transacciones y manejar excepciones.
-- **Tareas:**
-  - En el servicio de biblioteca, agrega lógica para manejar casos donde la inserción de un libro falle y la transacción deba revertirse.
-  - Configura `@Transactional` para que también realice rollback en excepciones controladas.
-  - Implementa pruebas para verificar que los datos se mantienen consistentes en caso de errores.
+**Objetivo**: Ampliar el modelo de datos con dos nuevas entidades y establecer relaciones entre ellas.
+
+### Tareas:
+1. Crea una entidad `Viaje` con los siguientes campos:
+    - `id` (Long)
+    - `destino` (String)
+    - `fechaSalida` (LocalDate)
+    - `fechaRegreso` (LocalDate)
+    - `precio` (BigDecimal)
+2. Crea una entidad `PaqueteTuristico` con los siguientes campos:
+    - `id` (Long)
+    - `nombre` (String)
+    - `descripcion` (String)
+    - `precioTotal` (BigDecimal)
+3. Establece las relaciones:
+    - Un `Cliente` puede tener muchos `Viaje`s (relación @OneToMany).
+    - Un `PaqueteTuristico` puede tener varios `Viaje`s (relación @OneToMany).
+    - Un `Cliente` puede reservar varios `PaqueteTuristico`s y un `PaqueteTuristico` puede ser reservado por varios clientes (relación @ManyToMany).
+4. Genera las tablas correspondientes en la base de datos utilizando JPA.
+
+---
+
+## Ejercicio 4: CRUD de Viaje
+
+**Objetivo**: Implementar un CRUD completo para la entidad `Viaje`.
+
+### Tareas:
+1. Crea un controlador que permita realizar operaciones CRUD sobre `Viaje`.
+    - Crear un nuevo viaje.
+    - Obtener todos los viajes.
+    - Actualizar un viaje existente.
+    - Eliminar un viaje.
+2. Asegúrate de que el cliente pueda listar todos los viajes que ha reservado.
+
+---
+
+## Ejercicio 5: Búsqueda de viajes por destino o rango de precios
+
+**Objetivo**: Permitir la búsqueda de viajes según distintos criterios.
+
+### Tareas:
+1. Implementa un método en el repositorio `ViajeRepository` para buscar viajes por destino.
+2. Implementa un método en el repositorio para buscar viajes dentro de un rango de precios.
+3. Añade un controlador que permita a los usuarios buscar viajes utilizando estos filtros.
+
+---
+
+## Ejercicio 6: Asignación de paquetes turísticos a clientes
+
+**Objetivo**: Permitir la asignación de un paquete turístico a un cliente.
+
+### Tareas:
+1. Crea un controlador que permita asignar un `PaqueteTuristico` a un `Cliente`.
+2. Implementa una funcionalidad para mostrar los detalles de un `PaqueteTuristico` junto con los viajes incluidos en él.
+3. Asegúrate de que los clientes puedan ver los paquetes que han reservado.
+
+---
+
+## Ejercicio 7: Calcular el precio total de los viajes de un cliente
+
+**Objetivo**: Implementar una funcionalidad que calcule el precio total de todos los viajes reservados por un cliente.
+
+### Tareas:
+1. En el servicio de `Cliente`, implementa un método que calcule el precio total de todos los viajes reservados por un cliente.
+2. Añade un endpoint en el controlador para mostrar el precio total de los viajes del cliente.
 
 ---
 
