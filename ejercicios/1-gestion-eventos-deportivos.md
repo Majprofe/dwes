@@ -1,18 +1,8 @@
-
-## **Proyecto: Aplicación de Gestión de Eventos Deportivos**
+## **Proyecto: Servicio de Reservas de Pistas Deportivas**
 
 ### **Descripción del Proyecto**
 
-El objetivo es desarrollar una aplicación para gestionar eventos deportivos locales. Los usuarios podrán registrarse, crear eventos deportivos, inscribirse en eventos existentes y ver información detallada de cada evento. Esto permitirá aplicar todos los conceptos aprendidos hasta ahora, incluyendo el manejo de entidades, relaciones, repositorios, servicios, controladores y transacciones con **Spring Data JPA** y **MySQL**.
-
-### **Objetivos Específicos**
-
-- **Configuración de un proyecto Spring Boot** con conexión a una base de datos MySQL.
-- **Definición de entidades** con relaciones entre ellas.
-- **Creación de repositorios** y consultas personalizadas.
-- **Implementación de servicios** con lógica de negocio y manejo de transacciones.
-- **Desarrollo de controladores REST** para exponer la funcionalidad de la aplicación.
-- **Aplicación de validaciones** y manejo de excepciones.
+El objetivo es desarrollar una aplicación para gestionar reservas de pistas deportivas, enfocada en un sistema de pádel. Los usuarios podrán registrarse y reservar pistas en horarios establecidos. Los horarios disponibles serán en bloques de **1 hora y media**, comenzando a las **9:00 AM** y terminando a las **13:30 PM** por la mañana, y desde las **17:00 PM** hasta las **21:30 PM** por la tarde. Los usuarios podrán ver la disponibilidad y gestionar sus reservas.
 
 ---
 
@@ -21,7 +11,7 @@ El objetivo es desarrollar una aplicación para gestionar eventos deportivos loc
 ### **Entidades Principales**
 
 1. **Usuario**
-
+   
    - **Campos:**
      - `id`: Long
      - `nombre`: String
@@ -29,451 +19,216 @@ El objetivo es desarrollar una aplicación para gestionar eventos deportivos loc
      - `contraseña`: String
      - `fechaRegistro`: LocalDateTime
    - **Relaciones:**
-     - One-to-Many con `Inscripcion` (un usuario puede tener muchas inscripciones).
+     - One-to-Many con `Reserva` (un usuario puede tener muchas reservas).
 
-2. **Evento**
-
+2. **Pista**
+   
    - **Campos:**
      - `id`: Long
-     - `nombre`: String
-     - `descripcion`: String
-     - `fecha`: LocalDateTime
-     - `lugar`: String
-     - `capacidad`: Integer
-     - `organizador`: Usuario
+     - `nombre`: String (por ejemplo, "Pista 1", "Pista 2")
+     - `ubicacion`: String
+     - `tipo`: String (por ejemplo, "Pádel", "Tenis")
    - **Relaciones:**
-     - Many-to-One con `Usuario` (organizador del evento).
-     - One-to-Many con `Inscripcion` (un evento puede tener muchas inscripciones).
+     - One-to-Many con `Reserva` (una pista puede tener muchas reservas).
 
-3. **Inscripcion**
-
+3. **Reserva**
+   
    - **Campos:**
      - `id`: Long
-     - `fechaInscripcion`: LocalDateTime
+     - `fechaReserva`: LocalDate (fecha de la reserva).
+     - `horaInicio`: LocalTime (hora de inicio de la reserva, como 9:00, 10:30, etc.).
+     - `horaFin`: LocalTime (hora de fin de la reserva, como 10:30, 12:00, etc.).
    - **Relaciones:**
-     - Many-to-One con `Usuario` (usuario inscrito).
-     - Many-to-One con `Evento` (evento al que se inscribe).
-
-### **Funcionalidades Requeridas**
-
-- **Registro y Autenticación de Usuarios** (puede ser simulado sin implementar seguridad completa).
-- **Creación de Eventos:**
-  - Los usuarios pueden crear nuevos eventos deportivos.
-- **Inscripción en Eventos:**
-  - Los usuarios pueden inscribirse en eventos existentes si hay cupo disponible.
-- **Consulta de Eventos:**
-  - Listar todos los eventos disponibles.
-  - Ver detalles de un evento específico.
-- **Administración de Eventos:**
-  - Los organizadores pueden editar o eliminar sus eventos.
-
-### **Consideraciones Técnicas**
-
-- **Base de Datos:**
-  - Utilizar **MySQL** como sistema de gestión de base de datos.
-- **ORM:**
-  - Utilizar **Spring Data JPA** para el mapeo objeto-relacional.
-- **Transacciones:**
-  - Gestionar transacciones para operaciones críticas (por ejemplo, inscripción a eventos).
-- **Validaciones:**
-  - Aplicar validaciones en los datos de entrada (por ejemplo, capacidad del evento, datos del usuario).
-- **Manejo de Excepciones:**
-  - Manejar adecuadamente las excepciones y errores que puedan ocurrir.
-- **Documentación:**
-  - Documentar las API REST utilizando Swagger o similar (opcional).
+     - Many-to-One con `Usuario` (usuario que reserva la pista).
+     - Many-to-One con `Pista` (pista que se reserva).
 
 ---
 
-## **Pasos para el Desarrollo**
+## **Endpoints de la Aplicación**
 
-### **1. Configuración del Proyecto**
+### **1. Usuario**
 
-- **Crear un nuevo proyecto Spring Boot** utilizando Spring Initializr o tu IDE preferido.
-- **Dependencias necesarias:**
-  - Spring Web
-  - Spring Data JPA
-  - MySQL Driver
-  - (Opcional) Spring Boot DevTools, Lombok
-
-### **2. Configuración de la Base de Datos MySQL**
-
-- **Instalar MySQL** si no está instalado.
-- **Crear una base de datos** llamada `eventos_db` (o el nombre que prefieras).
-- **Configurar las credenciales** en el archivo `application.properties`:
-
-  ```properties
-  spring.datasource.url=jdbc:mysql://localhost:3306/eventos_db?useSSL=false&serverTimezone=UTC
-  spring.datasource.username=tu_usuario
-  spring.datasource.password=tu_contraseña
-  spring.jpa.hibernate.ddl-auto=update
-  spring.jpa.show-sql=true
-  spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
-  ```
-
-### **3. Definición de Entidades**
-
-#### **Entidad Usuario**
-
-```java
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
-
-@Entity
-public class Usuario {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String nombre;
-    private String email;
-    private String contraseña;
-    private LocalDateTime fechaRegistro;
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    private List<Inscripcion> inscripciones;
-
-    @OneToMany(mappedBy = "organizador", cascade = CascadeType.ALL)
-    private List<Evento> eventosOrganizados;
-
-    // Getters y Setters
-}
-```
-
-#### **Entidad Evento**
-
-```java
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
-
-@Entity
-public class Evento {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String nombre;
-    private String descripcion;
-    private LocalDateTime fecha;
-    private String lugar;
-    private Integer capacidad;
-
-    @ManyToOne
-    @JoinColumn(name = "organizador_id")
-    private Usuario organizador;
-
-    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL)
-    private List<Inscripcion> inscripciones;
-
-    // Getters y Setters
-}
-```
-
-#### **Entidad Inscripcion**
-
-```java
-import javax.persistence.*;
-import java.time.LocalDateTime;
-
-@Entity
-public class Inscripcion {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private LocalDateTime fechaInscripcion;
-
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
-
-    @ManyToOne
-    @JoinColumn(name = "evento_id")
-    private Evento evento;
-
-    // Getters y Setters
-}
-```
-
-### **4. Creación de Repositorios**
-
-#### **UsuarioRepository**
-
-```java
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
-    Usuario findByEmail(String email);
-}
-```
-
-#### **EventoRepository**
-
-```java
-import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
-
-public interface EventoRepository extends JpaRepository<Evento, Long> {
-    List<Evento> findByNombreContaining(String nombre);
-}
-```
-
-#### **InscripcionRepository**
-
-```java
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface InscripcionRepository extends JpaRepository<Inscripcion, Long> {
-    boolean existsByUsuarioAndEvento(Usuario usuario, Evento evento);
-    int countByEvento(Evento evento);
-}
-```
-
-### **5. Implementación de Servicios**
-
-#### **UsuarioService**
-
-```java
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-@Service
-public class UsuarioService {
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    public Usuario registrarUsuario(Usuario usuario) {
-        usuario.setFechaRegistro(LocalDateTime.now());
-        return usuarioRepository.save(usuario);
+- **Registro de usuario**
+  - Método: `POST`
+  - URL: `/usuarios/registro`
+  - Descripción: Registra un nuevo usuario.
+  - Cuerpo de la solicitud (JSON):
+    ```json
+    {
+      "nombre": "Nombre del usuario",
+      "email": "usuario@example.com",
+      "contraseña": "contraseña123"
     }
-
-    public Usuario obtenerUsuarioPorId(Long id) {
-        return usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    ```
+  - Respuesta exitosa (JSON):
+    ```json
+    {
+      "id": 1,
+      "nombre": "Nombre del usuario",
+      "email": "usuario@example.com",
+      "fechaRegistro": "2024-10-09T12:34:56"
     }
+    ```
 
-    public Usuario obtenerUsuarioPorEmail(String email) {
-        return usuarioRepository.findByEmail(email);
+### **2. Pista**
+
+- **Obtener todas las pistas**
+  - Método: `GET`
+  - URL: `/pistas`
+  - Descripción: Devuelve una lista de todas las pistas disponibles.
+  - Respuesta exitosa (JSON):
+    ```json
+    [
+      {
+        "id": 1,
+        "nombre": "Pista 1",
+        "ubicacion": "Complejo Deportivo A",
+        "tipo": "Pádel"
+      },
+      {
+        "id": 2,
+        "nombre": "Pista 2",
+        "ubicacion": "Complejo Deportivo B",
+        "tipo": "Pádel"
+      }
+    ]
+    ```
+
+- **Crear una nueva pista**
+  - Método: `POST`
+  - URL: `/pistas`
+  - Descripción: Crea una nueva pista.
+  - Cuerpo de la solicitud (JSON):
+    ```json
+    {
+      "nombre": "Pista 1",
+      "ubicacion": "Complejo Deportivo A",
+      "tipo": "Pádel"
     }
-
-    // Otros métodos según sea necesario
-}
-```
-
-#### **EventoService**
-
-```java
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-@Service
-public class EventoService {
-
-    @Autowired
-    private EventoRepository eventoRepository;
-
-    @Transactional
-    public Evento crearEvento(Evento evento) {
-        return eventoRepository.save(evento);
+    ```
+  - Respuesta exitosa (JSON):
+    ```json
+    {
+      "id": 1,
+      "nombre": "Pista 1",
+      "ubicacion": "Complejo Deportivo A",
+      "tipo": "Pádel"
     }
+    ```
 
-    public List<Evento> listarEventos() {
-        return eventoRepository.findAll();
+### **3. Reserva**
+
+- **Reservar una pista**
+  - Método: `POST`
+  - URL: `/reservas`
+  - Descripción: Crea una nueva reserva para una pista en un horario específico.
+  - Parámetros de consulta:
+    - `usuarioId`: ID del usuario que hace la reserva.
+    - `pistaId`: ID de la pista a reservar.
+    - `fecha`: Fecha de la reserva (formato `yyyy-MM-dd`).
+    - `horaInicio`: Hora de inicio de la reserva (formato `HH:mm`).
+    - `horaFin`: Hora de fin de la reserva (formato `HH:mm`).
+  - Ejemplo de URL: 
+    ```
+    /reservas?usuarioId=1&pistaId=2&fecha=2024-10-10&horaInicio=09:00&horaFin=10:30
+    ```
+  - Respuesta exitosa (JSON):
+    ```json
+    {
+      "id": 1,
+      "fechaReserva": "2024-10-10",
+      "horaInicio": "09:00",
+      "horaFin": "10:30",
+      "usuario": {
+        "id": 1,
+        "nombre": "Nombre del usuario",
+        "email": "usuario@example.com"
+      },
+      "pista": {
+        "id": 2,
+        "nombre": "Pista 2",
+        "ubicacion": "Complejo Deportivo B"
+      }
     }
+    ```
 
-    public Evento obtenerEventoPorId(Long id) {
-        return eventoRepository.findById(id).orElseThrow(() -> new RuntimeException("Evento no encontrado"));
-    }
-
-    // Otros métodos como editar y eliminar eventos
-}
-```
-
-#### **InscripcionService**
-
-```java
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-@Service
-public class InscripcionService {
-
-    @Autowired
-    private InscripcionRepository inscripcionRepository;
-
-    @Autowired
-    private EventoService eventoService;
-
-    @Autowired
-    private UsuarioService usuarioService;
-
-    @Transactional
-    public void inscribirUsuarioEnEvento(Long usuarioId, Long eventoId) {
-        Evento evento = eventoService.obtenerEventoPorId(eventoId);
-        Usuario usuario = usuarioService.obtenerUsuarioPorId(usuarioId);
-
-        // Verificar si ya está inscrito
-        if (inscripcionRepository.existsByUsuarioAndEvento(usuario, evento)) {
-            throw new RuntimeException("El usuario ya está inscrito en este evento");
+- **Consultar reservas por pista y fecha**
+  - Método: `GET`
+  - URL: `/reservas/pista/{pistaId}`
+  - Descripción: Devuelve todas las reservas de una pista para una fecha específica.
+  - Parámetro de consulta:
+    - `fecha`: Fecha de las reservas (formato `yyyy-MM-dd`).
+  - Ejemplo de URL:
+    ```
+    /reservas/pista/2?fecha=2024-10-10
+    ```
+  - Respuesta exitosa (JSON):
+    ```json
+    [
+      {
+        "id": 1,
+        "fechaReserva": "2024-10-10",
+        "horaInicio": "09:00",
+        "horaFin": "10:30",
+        "usuario": {
+          "id": 1,
+          "nombre": "Nombre del usuario",
+          "email": "usuario@example.com"
         }
-
-        // Verificar capacidad
-        int inscritos = inscripcionRepository.countByEvento(evento);
-        if (inscritos >= evento.getCapacidad()) {
-            throw new RuntimeException("El evento ha alcanzado su capacidad máxima");
+      },
+      {
+        "id": 2,
+        "fechaReserva": "2024-10-10",
+        "horaInicio": "10:30",
+        "horaFin": "12:00",
+        "usuario": {
+          "id": 2,
+          "nombre": "Otro usuario",
+          "email": "otro@example.com"
         }
+      }
+    ]
+    ```
 
-        Inscripcion inscripcion = new Inscripcion();
-        inscripcion.setFechaInscripcion(LocalDateTime.now());
-        inscripcion.setUsuario(usuario);
-        inscripcion.setEvento(evento);
+---
 
-        inscripcionRepository.save(inscripcion);
-    }
+## **Consideraciones Técnicas**
 
-    // Otros métodos según sea necesario
-}
-```
+### **Base de Datos**
 
-### **6. Desarrollo de Controladores**
+- Utilizar **MySQL** como sistema de gestión de base de datos.
+- Configurar la base de datos en el archivo `application.properties`.
 
-#### **UsuarioController**
+### **ORM**
 
-```java
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+- Utilizar **Spring Data JPA** para el mapeo objeto-relacional.
 
-@RestController
-@RequestMapping("/usuarios")
-public class UsuarioController {
+### **Transacciones**
 
-    @Autowired
-    private UsuarioService usuarioService;
+- Gestionar transacciones en las operaciones críticas (por ejemplo, al crear una reserva).
 
-    @PostMapping("/registro")
-    public Usuario registrarUsuario(@RequestBody Usuario usuario) {
-        return usuarioService.registrarUsuario(usuario);
-    }
+### **Validaciones**
 
-    // Otros endpoints como autenticación (simulada)
-}
-```
+- Asegurarse de que los tramos horarios para la reserva sean de 1 hora y media.
+- Validar que no haya reservas superpuestas para la misma pista y horario.
 
-#### **EventoController**
+### **Manejo de Excepciones**
 
-```java
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
-
-@RestController
-@RequestMapping("/eventos")
-public class EventoController {
-
-    @Autowired
-    private EventoService eventoService;
-
-    @GetMapping
-    public List<Evento> listarEventos() {
-        return eventoService.listarEventos();
-    }
-
-    @PostMapping
-    public Evento crearEvento(@RequestBody Evento evento) {
-        return eventoService.crearEvento(evento);
-    }
-
-    @GetMapping("/{id}")
-    public Evento obtenerEvento(@PathVariable Long id) {
-        return eventoService.obtenerEventoPorId(id);
-    }
-
-    // Otros endpoints como editar y eliminar eventos
-}
-```
-
-#### **InscripcionController**
-
-```java
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-@RestController
-@RequestMapping("/inscripciones")
-public class InscripcionController {
-
-    @Autowired
-    private InscripcionService inscripcionService;
-
-    @PostMapping
-    public void inscribirUsuario(@RequestParam Long usuarioId, @RequestParam Long eventoId) {
-        inscripcionService.inscribirUsuarioEnEvento(usuarioId, eventoId);
-    }
-
-    // Otros endpoints según sea necesario
-}
-```
-
-### **7. Validaciones y Manejo de Excepciones**
-
-- Utiliza anotaciones como `@Valid` y `@NotNull` en tus entidades y controladores para validar datos de entrada.
-- Implementa un controlador global de excepciones usando `@ControllerAdvice` y `@ExceptionHandler` para manejar errores de forma consistente.
-
-### **8. Pruebas y Documentación**
-
-- **Pruebas:**
-  - Utiliza herramientas como Postman para probar los endpoints.
-  - Escribe pruebas unitarias y de integración con JUnit y Mockito (opcional).
-- **Documentación:**
-  - Agrega documentación a tus métodos y clases.
-  - Utiliza Swagger para documentar tus API REST (opcional).
+- Manejar adecuadamente las excepciones como:
+  - Usuario no encontrado.
+  - Pista no encontrada.
+  - Pista no disponible en el horario solicitado.
 
 ---
 
 ## **Entrega del Proyecto**
 
-- **Código Fuente:**
-  - Subir el código a un repositorio en GitHub o similar.
-- **Instrucciones:**
-  - Proporcionar instrucciones claras sobre cómo ejecutar la aplicación.
-  - Incluir scripts SQL si es necesario (aunque `ddl-auto=update` generará las tablas).
-- **Documentación:**
-  - Explicar las decisiones de diseño y cómo se aplicaron los conceptos aprendidos.
-- **Demostración:**
-  - Preparar una breve presentación o video mostrando el funcionamiento de la aplicación (opcional).
-
----
-
-## **Resultados de Aprendizaje**
-
-Al completar este proyecto, el alumnado será capaz de:
-
-- Configurar y conectar una aplicación Spring Boot con una base de datos MySQL.
-- Definir entidades y relaciones complejas utilizando JPA.
-- Crear repositorios y realizar consultas personalizadas.
-- Implementar servicios con lógica de negocio y transacciones.
-- Desarrollar controladores REST para exponer funcionalidades.
-- Aplicar validaciones y manejar excepciones de manera efectiva.
-- Comprender la importancia de las transacciones en operaciones críticas.
-
----
-
-## **Consejos Adicionales**
-
-- **Seguridad:**
-  - Aunque la implementación completa de seguridad está fuera del alcance, puedes simular la autenticación o utilizar Spring Security para agregar autenticación básica.
-- **Mejoras:**
-  - Implementa paginación en la lista de eventos.
-  - Permite que los usuarios busquen eventos por nombre o fecha.
-  - Agrega la posibilidad de cancelar inscripciones.
-- **Experiencia de Usuario:**
-  - Si te sientes cómodo, puedes desarrollar una interfaz web sencilla utilizando Thymeleaf o un cliente frontend con Angular/React (opcional).
-
+1. **Código Fuente:**
+   - Subir el código a un repositorio en GitHub y compartirlo con el profesor.
+2. **Instrucciones:**
+   - Proporcionar instrucciones claras sobre cómo ejecutar la aplicación.
+3. **Documentación:**
+   - Explicar las decisiones de diseño y realizar la documentación necesaria para que se entienda que hace cada cosa.
+4. **Demostración:**
+   - Preparar un pdf realizando capturas del postman comprobando que funcionan todos los endpoints.
 
