@@ -691,12 +691,12 @@ public class LibroDTO {
 ### Ejercicio 4: CRUD de Viaje
 
 ### Tareas:
-1. Crea un controlador que permita realizar operaciones CRUD sobre `Viaje`.
+1. Crea un servicio que permita realizar operaciones CRUD sobre `Viaje` y después crea un controlador con un endpoint para cada una de estas operaciones.
     - Crear un nuevo viaje.
     - Obtener todos los viajes.
     - Actualizar un viaje existente.
     - Eliminar un viaje.
-2. Asegúrate de que el cliente pueda listar todos los viajes que ha reservado.
+2. Además crea otro endpoint con su correspondiente servicio para que el cliente pueda listar todos los viajes que ha reservado.
 
 ---
 
