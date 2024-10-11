@@ -13,9 +13,8 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
 1. **Usuario**
    
    - **Campos:**
-     - `id`: Long
      - `nombre`: String
-     - `email`: String
+     - `email`: String - Primary Key
      - `contraseña`: String
      - `fechaRegistro`: LocalDateTime
    - **Relaciones:**
@@ -24,8 +23,7 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
 2. **Pista**
    
    - **Campos:**
-     - `id`: Long
-     - `nombre`: String (por ejemplo, "Pista 1", "Pista 2")
+     - `nombre`: String (por ejemplo, "Pista 1", "Pista 2") - Primary key
      - `ubicacion`: String
      - `tipo`: String (por ejemplo, "Pádel", "Tenis")
    - **Relaciones:**
@@ -34,10 +32,10 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
 3. **Reserva**
    
    - **Campos:**
-     - `id`: Long
      - `fechaReserva`: LocalDate (fecha de la reserva).
      - `horaInicio`: LocalTime (hora de inicio de la reserva, como 9:00, 10:30, etc.).
      - `horaFin`: LocalTime (hora de fin de la reserva, como 10:30, 12:00, etc.).
+     - Primary key: Nombre usuario y nombre de pista
    - **Relaciones:**
      - Many-to-One con `Usuario` (usuario que reserva la pista).
      - Many-to-One con `Pista` (pista que se reserva).
@@ -63,7 +61,6 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
   - Respuesta exitosa (JSON):
     ```json
     {
-      "id": 1,
       "nombre": "Nombre del usuario",
       "email": "usuario@example.com",
       "fechaRegistro": "2024-10-09T12:34:56"
@@ -80,13 +77,11 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
     ```json
     [
       {
-        "id": 1,
         "nombre": "Pista 1",
         "ubicacion": "Complejo Deportivo A",
         "tipo": "Pádel"
       },
       {
-        "id": 2,
         "nombre": "Pista 2",
         "ubicacion": "Complejo Deportivo B",
         "tipo": "Pádel"
@@ -109,7 +104,6 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
   - Respuesta exitosa (JSON):
     ```json
     {
-      "id": 1,
       "nombre": "Pista 1",
       "ubicacion": "Complejo Deportivo A",
       "tipo": "Pádel"
@@ -135,17 +129,14 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
   - Respuesta exitosa (JSON):
     ```json
     {
-      "id": 1,
       "fechaReserva": "2024-10-10",
       "horaInicio": "09:00",
       "horaFin": "10:30",
       "usuario": {
-        "id": 1,
         "nombre": "Nombre del usuario",
         "email": "usuario@example.com"
       },
       "pista": {
-        "id": 2,
         "nombre": "Pista 2",
         "ubicacion": "Complejo Deportivo B"
       }
@@ -166,23 +157,19 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
     ```json
     [
       {
-        "id": 1,
         "fechaReserva": "2024-10-10",
         "horaInicio": "09:00",
         "horaFin": "10:30",
         "usuario": {
-          "id": 1,
           "nombre": "Nombre del usuario",
           "email": "usuario@example.com"
         }
       },
       {
-        "id": 2,
         "fechaReserva": "2024-10-10",
         "horaInicio": "10:30",
         "horaFin": "12:00",
         "usuario": {
-          "id": 2,
           "nombre": "Otro usuario",
           "email": "otro@example.com"
         }
