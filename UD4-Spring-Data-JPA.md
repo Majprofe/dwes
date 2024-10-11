@@ -86,6 +86,27 @@ spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.hibernate.ddl-auto=update
 ```
 
+```
+# Configuración de la base de datos MySQL
+spring.datasource.url=jdbc:mysql://localhost:3306/nombre_base_datos?useSSL=false&serverTimezone=UTC
+spring.datasource.username=nombre_usuario
+spring.datasource.password=contraseña
+
+# Dialecto de Hibernate para MySQL
+spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
+
+# Mostrar las consultas SQL generadas (opcional)
+spring.jpa.show-sql=true
+
+# Modo de actualización de la base de datos (update crea las tablas automáticamente si no existen)
+spring.jpa.hibernate.ddl-auto=update
+
+```
+**Explicación de los parámetros:**
+- `spring.datasource.url`: La URL de conexión a la base de datos. Aquí, reemplaza localhost por la IP o el host de tu servidor MySQL, y nombre_base_datos por el nombre de tu base de datos.
+- `spring.jpa.database-platform`: El dialecto específico de MySQL para que Hibernate sepa cómo generar las consultas SQL.
+- `spring.jpa.hibernate.ddl-auto`: Controla cómo Hibernate debe gestionar el esquema de la base de datos
+
 ---
 
 ## Definición de Entidades
