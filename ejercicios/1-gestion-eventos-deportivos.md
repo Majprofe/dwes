@@ -35,7 +35,7 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
      - `fechaReserva`: LocalDate (fecha de la reserva).
      - `horaInicio`: LocalTime (hora de inicio de la reserva, como 9:00, 10:30, etc.).
      - `horaFin`: LocalTime (hora de fin de la reserva, como 10:30, 12:00, etc.).
-     - Primary key: Nombre usuario y nombre de pista
+     - Primary key: Email usuario y nombre de pista
    - **Relaciones:**
      - Many-to-One con `Usuario` (usuario que reserva la pista).
      - Many-to-One con `Pista` (pista que se reserva).
@@ -55,7 +55,7 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
     {
       "nombre": "Nombre del usuario",
       "email": "usuario@example.com",
-      "contraseña": "contraseña123"
+      "password": "contraseña123"
     }
     ```
   - Respuesta exitosa (JSON):
@@ -117,8 +117,8 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
   - URL: `/reservas`
   - Descripción: Crea una nueva reserva para una pista en un horario específico.
   - Parámetros de consulta:
-    - `usuarioId`: ID del usuario que hace la reserva.
-    - `pistaId`: ID de la pista a reservar.
+    - `usuarioEmail`: Email del usuario que hace la reserva.
+    - `pistaNombre`: Nombre de la pista a reservar.
     - `fecha`: Fecha de la reserva (formato `yyyy-MM-dd`).
     - `horaInicio`: Hora de inicio de la reserva (formato `HH:mm`).
     - `horaFin`: Hora de fin de la reserva (formato `HH:mm`).
@@ -145,13 +145,13 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
 
 - **Consultar reservas por pista y fecha**
   - Método: `GET`
-  - URL: `/reservas/pista/{pistaId}`
+  - URL: `/reservas/pista/{pistaNombre}`
   - Descripción: Devuelve todas las reservas de una pista para una fecha específica.
   - Parámetro de consulta:
     - `fecha`: Fecha de las reservas (formato `yyyy-MM-dd`).
   - Ejemplo de URL:
     ```
-    /reservas/pista/2?fecha=2024-10-10
+    /reservas/pista/Pista2?fecha=2024-10-10
     ```
   - Respuesta exitosa (JSON):
     ```json
