@@ -15,7 +15,7 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
    - **Campos:**
      - `nombre`: String
      - `email`: String - Primary Key
-     - `contraseña`: String
+     - `password`: String
      - `fechaRegistro`: LocalDateTime
    - **Relaciones:**
      - One-to-Many con `Reserva` (un usuario puede tener muchas reservas).
