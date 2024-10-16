@@ -126,6 +126,16 @@ El objetivo es desarrollar una aplicación para gestionar reservas de pistas dep
     ```
     /reservas?usuarioId=1&pistaId=2&fecha=2024-10-10&horaInicio=09:00&horaFin=10:30
     ```
+  - Otra posibilidad es crear una **clase DTO** llamada ReservaRequestDTO para estos datos, la ubicarás en la carpeta dto de tu proyecto y podrías hacer una llamada al endpoint pasándole un JSON con los atributos de esta clase DTO, luego en el Servicio de Reserva irás accediendo a cada uno de los atributos del parámetro:
+   ```json
+   {
+     "usuarioEmail": "usuario@example.com",
+     "pistaNombre": "Pista 2",
+     "fecha": "2024-10-10",
+     "horaInicio": "09:00",
+     "horaFin": "10:30"
+   }
+   ```
   - Respuesta exitosa (JSON):
     ```json
     {
