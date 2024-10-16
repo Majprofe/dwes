@@ -88,7 +88,7 @@ spring.jpa.hibernate.ddl-auto=update
 
 ```
 # Configuración de la base de datos MySQL
-spring.datasource.url=jdbc:mysql://localhost:3306/nombre_base_datos?useSSL=false&serverTimezone=UTC
+spring.datasource.url=jdbc:mysql://localhost:3306/nombre_base_datos
 spring.datasource.username=nombre_usuario
 spring.datasource.password=contraseña
 
