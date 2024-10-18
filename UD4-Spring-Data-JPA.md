@@ -151,7 +151,7 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nombre", nullable = false)
+    @Column(name = "nombre", nullable = false, length = 150)
     private String nombre;
 
     private String email;
@@ -194,16 +194,16 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 | **Actualizar**| `UPDATE`          | `save(entity)` (si ya existe)         |
 | **Eliminar**  | `DELETE`          | `delete(entity)`, `deleteById(id)`    |
 
+[JPA methods](https://www.tutorialspoint.com/spring_boot_jpa/spring_boot_jpa_repository_methods.htm)
+
 ### Guardar una Entidad
 
 ```java
 @Autowired
 private UsuarioRepository usuarioRepository;
 
-public void crearUsuario() {
-    Usuario usuario = new Usuario();
-    usuario.setNombre("Juan");
-    usuario.setEmail("juan@example.com");
+public void crearUsuario(Usuario usuario) {
+    usuario.setFechaActual(LocalDate.now()); //Aquí podemos asignar atributos
     usuarioRepository.save(usuario);
 }
 ```
@@ -214,6 +214,14 @@ public void crearUsuario() {
 public void obtenerUsuario(Long id) {
     Optional<Usuario> usuario = usuarioRepository.findById(id);
     usuario.ifPresent(u -> System.out.println(u.getNombre()));
+}
+```
+También podemos buscar de esta manera, lanzando una excepción si no lo encuentra:
+```java
+public Usuario obtenerUsuario(Long id) {
+    Usuario usuario = usuarioService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    return usuario;
 }
 ```
 
@@ -250,6 +258,7 @@ List<Usuario> findByNombre(String nombre);
 List<Usuario> findByNombreAndEmail(String nombre, String email);
 List<Usuario> findByNombreContaining(String fragmentoNombre);
 ```
+[JPA keyword methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html)
 
 ### Uso de la Anotación `@Query`
 
@@ -326,12 +335,13 @@ public class Cliente {
     
     private String nombre;
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL) //Debemos poner en mappedBy el nombre del atributo que referencia esta clase
     private List<Pedido> pedidos;
     
     // Getters y Setters
 }
 ```
+El uso de `cascade = CascadeType.ALL` en la relación `OneToMany` significa que cualquier operación que se realice sobre la entidad `Cliente` (como persistir, eliminar, actualizar) se aplicará automáticamente a los objetos `Pedido` asociados. Esto es útil cuando queremos que las entidades relacionadas se gestionen automáticamente en bloque, pero hay que tener cuidado de no usarlo en situaciones donde no se desea esta propagación.
 
 Y en la entidad `Pedido`, especificamos la relación inversa con `@ManyToOne`:
 
@@ -346,14 +356,14 @@ public class Pedido {
     private String descripcion;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_id")  // Clave foránea en la tabla Pedido
-    private Cliente cliente;
+    @JoinColumn(name = "cliente_id")  // Clave foránea que establece la relación, nosotros elegimos el nombre
+    private Cliente cliente; //Este atributo está referenciado en la entidad 'Cliente' en mappedBy
     
     // Getters y Setters
 }
 ```
 
-Aquí, un cliente puede tener múltiples pedidos, y cada pedido está relacionado con un solo cliente mediante la columna `cliente_id` en la tabla `Pedido`.
+Aquí, un cliente puede tener múltiples pedidos, y cada pedido está relacionado con un solo cliente mediante la columna `cliente_id` en la tabla `Pedido`. `Pedido` es la entidad propietaria de la relación, ya que contiene la clave foránea `cliente_id`.
 
 #### **@ManyToMany**
 Esta anotación se utiliza para modelar relaciones donde varios registros de una entidad están relacionados con varios registros de otra entidad. Un ejemplo común es la relación entre libros y autores: un libro puede tener varios autores, y un autor puede haber escrito varios libros. Para mapear esta relación, necesitamos una tabla intermedia.
