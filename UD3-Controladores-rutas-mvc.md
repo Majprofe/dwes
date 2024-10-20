@@ -10,6 +10,7 @@
 3. [Controladores en Spring Boot](#controladores-en-spring-boot)
    - [3.1 Creación de un Controlador](#31-creación-de-un-controlador)
    - [3.2 Anotaciones Comunes](#32-anotaciones-comunes)
+   - [3.3 Uso de ResponseEntity](#33-uso-de-responseentity)
 4. [Mapeo de Rutas y Solicitudes](#mapeo-de-rutas-y-solicitudes)
    - [4.1 Anotaciones de Mapeo](#41-anotaciones-de-mapeo)
    - [4.2 Manejo de Parámetros](#42-manejo-de-parámetros)
@@ -18,6 +19,7 @@
    - [5.2 Integración de Thymeleaf en Spring Boot](#52-integración-de-thymeleaf-en-spring-boot)
 6. [Pasando Datos entre Modelo y Vista](#pasando-datos-entre-modelo-y-vista)
 7. [Ejercicios](#ejercicios)
+
 
 ---
 
@@ -118,6 +120,87 @@ public class ProductoController {
 - `@RestController`: Combina `@Controller` y `@ResponseBody`, apropiado para APIs REST, que devuelven datos (JSON o XML).
 - `@GetMapping`, `@PostMapping`, `@PutMapping`, `@DeleteMapping`: Especifican el método HTTP y la ruta para el manejo de solicitudes.
 
+## Uso de ResponseEntity
+
+Antes de continuar, es muy recomendable revisar este artículo sobre los diferentes [métodos HTTP](https://www.dariawan.com/tutorials/rest/http-methods-spring-restful-services/) en servicios web REST. Explica claramente cómo deben ser las operaciones que se pueden llevar a cabo sobre los recursos del sistema.
+
+Las operaciones devuelven un [código de estado HTTP](https://developer.mozilla.org/es/docs/Web/HTTP/Status) correspondiente. Esto lo logramos con el uso de `ResponseEntity` en el controlador.
+
+### Ejemplo básico de uso:
+
+```java
+@RestController
+@RequestMapping("/api")
+public class UsuarioController {
+
+    @GetMapping("/usuario/{id}")
+    public ResponseEntity<Usuario> obtenerUsuario(@PathVariable Long id) {
+        Usuario usuario = usuarioService.findById(id);
+        if (usuario != null) {
+            return ResponseEntity.ok(usuario); // 200 OK
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404 Not Found
+        }
+    }
+}
+```
+En este ejemplo, `ResponseEntity.ok(usuario)` devuelve una respuesta 200 con el objeto `Usuario`. Si no se encuentra, devuelve un 404 (Not Found).
+
+### Personalización de cabeceras
+```java
+@GetMapping("/usuario/{id}")
+public ResponseEntity<Usuario> obtenerUsuarioConCabecera(@PathVariable Long id) {
+    Usuario usuario = usuarioService.findById(id);
+    if (usuario != null) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Custom-Header", "value");
+        return ResponseEntity.ok().headers(headers).body(usuario); // 200 OK con cabecera personalizada
+    } else {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404 Not Found
+    }
+}
+```
+Podemos añadir una cabecera personalizada utilizando `HttpHeaders` para agregar información adicional a la respuesta.
+
+### Códigos de estado personalizados
+```java
+@PostMapping("/usuario")
+public ResponseEntity<String> crearUsuario(@RequestBody Usuario usuario) {
+    if (usuarioService.existe(usuario)) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("Usuario ya existe"); // 409 Conflict
+    } else {
+        usuarioService.save(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Usuario creado"); // 201 Created
+    }
+}
+```
+Este ejemplo muestra cómo devolver diferentes códigos de estado (`201 Created` o `409 Conflict`) dependiendo de la operación realizada.
+
+### Métodos comunes de la clase ResponseEntity
+1. `ok()`: Devuelve un ResponseEntity con un estado `200 OK`.
+```java
+return ResponseEntity.ok(data);
+```
+
+2. `status(HttpStatus)`: Permite especificar un estado HTTP personalizado.
+```java
+return ResponseEntity.status(HttpStatus.CREATED).body(data);
+```
+
+3. `badRequest()`: Devuelve un estado `400 Bad Request`.
+```java
+return ResponseEntity.badRequest().build();
+```
+
+4. `notFound()`: Devuelve un estado `404 Not Found`.
+```java
+return ResponseEntity.notFound().build();
+```
+5. `build()`: Crea un `ResponseEntity` vacío.
+```java
+return ResponseEntity.status(HttpStatus.CREATED).build(); //Sólo devuelve el estado HTTP sin cuerpo en la respuesta
+```
+
 ---
 
 ## Mapeo de Rutas y Solicitudes
@@ -157,6 +240,16 @@ La llamada desde el cliente sería: `http://localhost:8080/usuarios/5`
   }
   ```
 La llamada desde el cliente sería: `http://localhost:8080/buscar?q=camiseta`
+
+- **Parámetros en el Body (Body Parameters):**
+
+  ```java
+  @PostMapping("/addreserva")
+  public String buscar(@RequestBody ReservaDTO reserva) {
+      // Lógica para añadir la reserva
+  }
+  ```
+La llamada desde el cliente sería: `http://localhost:8080/addreserva`
 
 ---
 

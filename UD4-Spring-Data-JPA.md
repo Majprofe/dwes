@@ -3,30 +3,48 @@
 ## Índice
 
 - [Introducción a Spring Data JPA](#introducción-a-spring-data-jpa)
+  - [¿Qué es JPA?](#qué-es-jpa)
+  - [Ventajas de usar Spring Data JPA](#ventajas-de-usar-spring-data-jpa)
 - [Configuración de Spring Data JPA en un Proyecto Spring Boot](#configuración-de-spring-data-jpa-en-un-proyecto-spring-boot)
+  - [Dependencias](#dependencias)
+  - [Configuración de la Base de Datos](#configuración-de-la-base-de-datos)
 - [Definición de Entidades](#definición-de-entidades)
   - [Anotaciones Básicas](#anotaciones-básicas)
   - [Estrategias de Generación de IDs](#estrategias-de-generación-de-ids)
+  - [Ejemplo de una Entidad Simple](#ejemplo-de-una-entidad-simple)
 - [Repositorios en Spring Data JPA](#repositorios-en-spring-data-jpa)
+  - [Interfaces Principales](#interfaces-principales)
+  - [Creación de un Repositorio](#creación-de-un-repositorio)
 - [Operaciones CRUD Básicas](#operaciones-crud-básicas)
   - [Equivalencia entre SQL y JPA](#equivalencia-entre-sql-y-jpa)
+  - [Operaciones CRUD](#operaciones-crud)
+    - [Guardar una Entidad](#guardar-una-entidad)
+    - [Obtener una Entidad](#obtener-una-entidad)
+    - [Actualizar una Entidad](#actualizar-una-entidad)
+    - [Eliminar una Entidad](#eliminar-una-entidad)
 - [Consultas Personalizadas](#consultas-personalizadas)
   - [Métodos Derivados](#métodos-derivados)
   - [Uso de la Anotación `@Query`](#uso-de-la-anotación-query)
   - [Consultas Nativas](#consultas-nativas)
 - [Relaciones entre Entidades](#relaciones-entre-entidades)
-  - [Tipos de Relaciones](#tipos-de-relaciones)
-  - [Explicación Detallada de Cada Anotación](#explicación-detallada-de-cada-anotación)
+  - [Anotaciones para Mapear Relaciones en JPA](#anotaciones-para-mapear-relaciones-en-jpa)
     - [@OneToOne](#onetoone)
     - [@OneToMany y @ManyToOne](#onetomany-y-manytoone)
     - [@ManyToMany](#manytomany)
-    - [Clave Compuesta con `@EmbeddedId`](#clave-compuesta-con-embeddedid)
-- [Gestión de Transacciones](#gestión-de-transacciones)
-  - [Importancia de las Transacciones](#importancia-de-las-transacciones)
-  - [Uso de `@Transactional`](#uso-de-transactional)
-- [Lanzamiento de Excepciones](#lanzamiento-de-excepciones)
+  - [Clave Compuesta con `@EmbeddedId`](#clave-compuesta-con-embeddedid)
+- [Servicios](#servicios)
+  - [Definición de la Capa de Servicio](#definición-de-la-capa-de-servicio)
+  - [Implementación de Servicios en Spring Boot](#implementación-de-servicios-en-spring-boot)
+  - [Gestión de Transacciones](#gestión-de-transacciones)
+    - [Importancia de las Transacciones](#importancia-de-las-transacciones)
+    - [Uso de `@Transactional`](#uso-de-transactional)
+  - [Lanzamiento de Excepciones](#lanzamiento-de-excepciones)
+  - [Buenas Prácticas en la Capa de Servicio](#buenas-prácticas-en-la-capa-de-servicio)
 - [Ejemplo Práctico Ampliado](#ejemplo-práctico-ampliado)
   - [Entidades y Relaciones](#entidades-y-relaciones)
+    - [Entidad Autor](#entidad-autor)
+    - [Entidad Editorial](#entidad-editorial)
+    - [Entidad Libro](#entidad-libro)
   - [Repositorios](#repositorios)
   - [Servicio con Transacciones y Consultas Personalizadas](#servicio-con-transacciones-y-consultas-personalizadas)
   - [Controlador con Método Completado](#controlador-con-método-completado)
@@ -39,8 +57,7 @@
   - [Ejercicio 5: Búsqueda de viajes por destino o rango de precios](#ejercicio-5-búsqueda-de-viajes-por-destino-o-rango-de-precios)
   - [Ejercicio 6: Asignación de paquetes turísticos a clientes](#ejercicio-6-asignación-de-paquetes-turísticos-a-clientes)
   - [Ejercicio 7: Calcular el precio total de los viajes de un cliente](#ejercicio-7-calcular-el-precio-total-de-los-viajes-de-un-cliente)
-- [Conclusión](#conclusión)
-
+- [Referencias](#referencias)
 
 ---
 
@@ -59,7 +76,7 @@ JPA es una especificación de Java que define cómo manejar datos relacionales e
 - **Extensibilidad**: Permite crear consultas personalizadas fácilmente.
 - **Integración**: Se integra perfectamente con otros módulos de Spring.
 
-<img src="imagenes/UD4/springdata_jpa.png" alt="Spring Data" width="600"/>
+<img src="imagenes/UD5/springdata_jpa.png" alt="Spring Data" width="600"/>
 
 ---
 
@@ -106,6 +123,8 @@ spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.hibernate.ddl-auto=update
 ```
 
+También puedes configurar una base de datos MySQL:
+
 ```properties
 # Configuración de la base de datos MySQL
 spring.datasource.url=jdbc:mysql://localhost:3306/nombre_base_datos
@@ -118,14 +137,15 @@ spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
 # Mostrar las consultas SQL generadas (opcional)
 spring.jpa.show-sql=true
 
-# Modo de actualización de la base de datos (update crea las tablas automáticamente si no existen)
+# Modo de actualización de la base de datos
 spring.jpa.hibernate.ddl-auto=update
-
 ```
+
 **Explicación de los parámetros:**
-- `spring.datasource.url`: La URL de conexión a la base de datos. Aquí, reemplaza localhost por la IP o el host de tu servidor MySQL, y nombre_base_datos por el nombre de tu base de datos.
+
+- `spring.datasource.url`: La URL de conexión a la base de datos.
 - `spring.jpa.database-platform`: El dialecto específico de MySQL para que Hibernate sepa cómo generar las consultas SQL.
-- `spring.jpa.hibernate.ddl-auto`: Controla cómo Hibernate debe gestionar el esquema de la base de datos
+- `spring.jpa.hibernate.ddl-auto`: Controla cómo Hibernate debe gestionar el esquema de la base de datos.
 
 ---
 
@@ -207,55 +227,53 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
 ### Equivalencia entre SQL y JPA
 
-| Operación     | SQL               | JPA Repository                        |
-|---------------|-------------------|---------------------------------------|
-| **Crear**     | `INSERT INTO`     | `save(entity)`                        |
-| **Leer**      | `SELECT`          | `findById(id)`, `findAll()`           |
-| **Actualizar**| `UPDATE`          | `save(entity)` (si ya existe)         |
-| **Eliminar**  | `DELETE`          | `delete(entity)`, `deleteById(id)`    |
+| Operación      | SQL               | JPA Repository                        |
+|----------------|-------------------|---------------------------------------|
+| **Crear**      | `INSERT INTO`     | `save(entity)`                        |
+| **Leer**       | `SELECT`          | `findById(id)`, `findAll()`           |
+| **Actualizar** | `UPDATE`          | `save(entity)` (si ya existe)         |
+| **Eliminar**   | `DELETE`          | `delete(entity)`, `deleteById(id)`    |
 
-[JPA methods](https://www.tutorialspoint.com/spring_boot_jpa/spring_boot_jpa_repository_methods.htm)
+[Documentación de métodos de JPA](https://www.tutorialspoint.com/spring_boot_jpa/spring_boot_jpa_repository_methods.htm)
 
-### Guardar una Entidad
+### Operaciones CRUD
+
+#### Guardar una Entidad
 
 ```java
-@Autowired
-private UsuarioRepository usuarioRepository;
+@Service
+public class UsuarioService {
 
-public void crearUsuario(Usuario usuario) {
-    usuario.setFechaActual(LocalDate.now()); //Aquí podemos asignar atributos
-    usuarioRepository.save(usuario);
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    public Usuario crearUsuario(Usuario usuario) {
+        return usuarioRepository.save(usuario);
+    }
 }
 ```
 
-### Obtener una Entidad
+#### Obtener una Entidad
 
-```java
-public void obtenerUsuario(Long id) {
-    Optional<Usuario> usuario = usuarioRepository.findById(id);
-    usuario.ifPresent(u -> System.out.println(u.getNombre()));
-}
-```
-También podemos buscar de esta manera, lanzando una excepción si no lo encuentra:
 ```java
 public Usuario obtenerUsuario(Long id) {
-    Usuario usuario = usuarioService.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-    return usuario;
+    return usuarioRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 }
 ```
 
-### Actualizar una Entidad
+#### Actualizar una Entidad
 
 ```java
-public void actualizarUsuario(Long id) {
-    Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-    usuario.setEmail("nuevoemail@example.com");
-    usuarioRepository.save(usuario);
+public Usuario actualizarUsuario(Long id, Usuario nuevosDatos) {
+    Usuario usuario = obtenerUsuario(id);
+    usuario.setNombre(nuevosDatos.getNombre());
+    usuario.setEmail(nuevosDatos.getEmail());
+    return usuarioRepository.save(usuario);
 }
 ```
 
-### Eliminar una Entidad
+#### Eliminar una Entidad
 
 ```java
 public void eliminarUsuario(Long id) {
@@ -278,7 +296,8 @@ List<Usuario> findByNombre(String nombre);
 List<Usuario> findByNombreAndEmail(String nombre, String email);
 List<Usuario> findByNombreContaining(String fragmentoNombre);
 ```
-[JPA keyword methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html)
+
+[Palabras clave para métodos de consulta en JPA](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation)
 
 ### Uso de la Anotación `@Query`
 
@@ -302,39 +321,27 @@ Usuario buscarPorEmailNativo(String email);
 
 ## Relaciones entre Entidades
 
-En JPA, las entidades pueden tener relaciones entre sí. Estas relaciones reflejan cómo los datos en diferentes tablas de la base de datos están vinculados entre ellos. Spring Data JPA proporciona anotaciones que nos permiten modelar estas relaciones de una manera sencilla. Los tipos principales de relaciones son:
-
-1. **One-to-One (Uno a Uno)**: Un registro de una tabla está vinculado a un único registro de otra tabla.
-2. **One-to-Many (Uno a Muchos) / Many-to-One (Muchos a Uno)**: Un registro de una tabla está vinculado a múltiples registros de otra tabla, y viceversa.
-3. **Many-to-Many (Muchos a Muchos)**: Múltiples registros de una tabla están vinculados a múltiples registros de otra tabla.
+En JPA, las entidades pueden tener relaciones entre sí. Estas relaciones reflejan cómo los datos en diferentes tablas de la base de datos están vinculados entre ellos. Spring Data JPA proporciona anotaciones que nos permiten modelar estas relaciones de una manera sencilla.
 
 ### Anotaciones para Mapear Relaciones en JPA
 
-- **`@OneToOne`**: Esta anotación define una relación de uno a uno entre dos entidades. Por ejemplo, un usuario puede tener un solo perfil y un perfil puede pertenecer a un solo usuario.
-- **`@OneToMany`**: Define una relación donde una entidad está vinculada a muchas otras. Por ejemplo, un cliente puede tener varios pedidos.
-- **`@ManyToOne`**: Es la relación inversa de `@OneToMany`, donde muchos registros de una entidad pueden estar vinculados a uno solo de otra entidad. Por ejemplo, muchos pedidos pueden pertenecer a un único cliente.
-- **`@ManyToMany`**: Define una relación donde múltiples registros de una entidad están relacionados con múltiples registros de otra entidad. Por ejemplo, un libro puede ser escrito por varios autores y un autor puede escribir varios libros.
-- **`@JoinColumn`**: Utilizada para especificar la columna que actúa como clave foránea en la base de datos para establecer la relación.
-- **`@JoinTable`**: En una relación `ManyToMany`, se utiliza para definir una tabla intermedia que contiene las claves foráneas de ambas tablas.
-
-### Explicación Detallada de Cada Anotación
-
 #### **@OneToOne**
-Esta anotación se utiliza cuando un registro de una entidad está relacionado con un único registro de otra entidad. Por ejemplo, si modelamos un sistema donde cada usuario tiene un perfil único, lo haríamos de la siguiente manera:
+
+Se utiliza cuando un registro de una entidad está relacionado con un único registro de otra entidad.
 
 ```java
 @Entity
 public class Perfil {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    private String nombre;
 
-    @OneToOne(mappedBy = "perfil") //Indica que la clave foránea está en la clase Usuario
+    private String biografia;
+
+    @OneToOne(mappedBy = "perfil")
     private Usuario usuario;
-    
+
     // Getters y Setters
 }
 ```
@@ -342,46 +349,41 @@ public class Perfil {
 ```java
 @Entity
 public class Usuario {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private String nombre;
 
     @OneToOne
-    @JoinColumn(name = "perfil_id")  // Clave foránea en la tabla Usuario
+    @JoinColumn(name = "perfil_id")
     private Perfil perfil;
-    
+
     // Getters y Setters
 }
 ```
 
-En este caso, la tabla `Usuario` tendrá una columna `perfil_id` que actúa como clave foránea para relacionar al usuario con un perfil en la tabla `Perfil`. La entidad `Usuario` es la propietaria de la relación, y el campo `mappedBy = "perfil"` indica que el atributo que gestiona esta relación está en la entidad `Perfil`.
-
-
 #### **@OneToMany y @ManyToOne**
-Estas anotaciones definen relaciones donde una entidad puede tener varios registros relacionados con otra. En una relación `OneToMany`, el lado "uno" de la relación suele ser propietario de la relación, y en la base de datos se define mediante una clave foránea en la entidad "muchos". Por ejemplo, un cliente puede tener muchos pedidos:
+
+Modela relaciones donde una entidad está vinculada a muchas otras.
 
 ```java
 @Entity
 public class Cliente {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private String nombre;
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL) //Debemos poner en mappedBy el nombre del atributo que referencia esta clase
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Pedido> pedidos;
-    
+
     // Getters y Setters
 }
 ```
-El uso de `cascade = CascadeType.ALL` en la relación `OneToMany` significa que cualquier operación que se realice sobre la entidad `Cliente` (como persistir, eliminar, actualizar) se aplicará automáticamente a los objetos `Pedido` asociados. Esto es útil cuando queremos que las entidades relacionadas se gestionen automáticamente en bloque, pero hay que tener cuidado de no usarlo en situaciones donde no se desea esta propagación.
-
-Y en la entidad `Pedido`, especificamos la relación inversa con `@ManyToOne`:
 
 ```java
 @Entity
@@ -391,49 +393,23 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String descripcion;
+    private String producto;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_id")  // Clave foránea que establece la relación, nosotros elegimos el nombre
-    private Cliente cliente; //Este atributo está referenciado en la entidad 'Cliente' en mappedBy
-    
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
+
     // Getters y Setters
 }
 ```
-
-Aquí, un cliente puede tener múltiples pedidos, y cada pedido está relacionado con un solo cliente mediante la columna `cliente_id` en la tabla `Pedido`. `Pedido` es la entidad propietaria de la relación, ya que contiene la clave foránea `cliente_id`.
 
 #### **@ManyToMany**
-Esta anotación se utiliza para modelar relaciones donde varios registros de una entidad están relacionados con varios registros de otra entidad. Un ejemplo común es la relación entre libros y autores: un libro puede tener varios autores, y un autor puede haber escrito varios libros. Para mapear esta relación, necesitamos una tabla intermedia.
+
+Define relaciones donde múltiples registros de una entidad están relacionados con múltiples registros de otra entidad.
 
 ```java
 @Entity
-public class Libro {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    private String titulo;
-
-    @ManyToMany
-    @JoinTable(
-        name = "libro_autor",  // Nombre de la tabla intermedia
-        joinColumns = @JoinColumn(name = "libro_id"),  // Clave foránea de la entidad Libro
-        inverseJoinColumns = @JoinColumn(name = "autor_id")  // Clave foránea de la entidad Autor
-    )
-    private List<Autor> autores;
-    
-    // Getters y Setters
-}
-```
-En este caso, la anotación `@JoinTable` se utiliza para crear una tabla intermedia llamada `libro_autor` en la base de datos. Esta tabla contiene dos columnas: `libro_id` y `autor_id`, que son claves foráneas referenciando los identificadores de las tablas `Libro` y `Autor` respectivamente.
-
-En la entidad `Autor`, también especificamos la relación:
-
-```java
-@Entity
-public class Autor {
+public class Estudiante {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -441,55 +417,48 @@ public class Autor {
 
     private String nombre;
 
-    @ManyToMany(mappedBy = "autores")  // Inverso de la relación ManyToMany
-    private List<Libro> libros;
-    
+    @ManyToMany
+    @JoinTable(
+        name = "estudiante_curso",
+        joinColumns = @JoinColumn(name = "estudiante_id"),
+        inverseJoinColumns = @JoinColumn(name = "curso_id")
+    )
+    private List<Curso> cursos;
+
     // Getters y Setters
 }
 ```
 
-Aquí, la tabla intermedia `libro_autor` almacenará los IDs de ambos `Libro` y `Autor` para representar las relaciones entre ellos.
+```java
+@Entity
+public class Curso {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String titulo;
+
+    @ManyToMany(mappedBy = "cursos")
+    private List<Estudiante> estudiantes;
+
+    // Getters y Setters
+}
+```
 
 ### Clave Compuesta con `@EmbeddedId`
 
-A veces, necesitamos que una tabla tenga más de una columna como clave primaria, es decir, una **clave compuesta**. En JPA, esto se logra con dos anotaciones principales:
-
-- **`@Embeddable`**: Para crear una clase que representa las columnas de la clave compuesta.
-- **`@EmbeddedId`**: Para usar esa clase como la clave primaria en una entidad.
-
-#### Paso 1: Crear la Clase Embebida con `@Embeddable`
-
-Esta clase contendrá las columnas que forman la clave compuesta, como por ejemplo los IDs de dos entidades relacionadas.
+Para tablas con claves primarias compuestas.
 
 ```java
 @Embeddable
 public class MatriculaId implements Serializable {
     private Long estudianteId;
-    private Long asignaturaId;
+    private Long cursoId;
 
-    // Constructores, Getters y Setters
-
-
-    // Sobrescribir equals() y hashCode()
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MatriculaId that = (MatriculaId) o;
-        return estudianteId.equals(that.estudianteId) && asignaturaId.equals(that.asignaturaId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(estudianteId, asignaturaId);
-    }
+    // Constructores, equals() y hashCode()
 }
 ```
-- Implementa `equals()` y `hashCode()` para garantizar la correcta comparación y uso en estructuras de datos como `Set` o `Map`.
-
-#### Paso 2: Usar `@EmbeddedId` en la Entidad
-En la entidad `Matricula`, usamos la clase `MatriculaId` como clave primaria.
 
 ```java
 @Entity
@@ -499,40 +468,77 @@ public class Matricula {
     private MatriculaId id;
 
     @ManyToOne
-    @JoinColumn(name = "estudiante_id")
     @MapsId("estudianteId")
+    @JoinColumn(name = "estudiante_id")
     private Estudiante estudiante;
 
     @ManyToOne
-    @JoinColumn(name = "asignatura_id")
-    @MapsId("asignaturaId")
-    private Asignatura asignatura;
+    @MapsId("cursoId")
+    @JoinColumn(name = "curso_id")
+    private Curso curso;
 
-    private String periodo;
+    private LocalDate fechaMatricula;
 
-    // Constructores, Getters y Setters
+    // Getters y Setters
 }
 ```
-- `@MapsId`: Enlaza cada una de las claves foráneas con los campos de `MatriculaId`
 
 ---
 
-## Gestión de Transacciones
+## Servicios
+
+### Definición de la Capa de Servicio
+
+La capa de servicio en una aplicación Spring Boot es donde se implementa la lógica de negocio. Actúa como intermediario entre los controladores (que manejan las solicitudes HTTP) y los repositorios (que interactúan con la base de datos).
+
+### Implementación de Servicios en Spring Boot
+
+Para definir un servicio, se utiliza la anotación `@Service`. Esta indica a Spring que la clase es un componente de servicio y permite la inyección de dependencias.
+
+**Ejemplo de un Servicio Simple:**
+
+```java
+@Service
+public class UsuarioService {
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    public Usuario crearUsuario(Usuario usuario) {
+        return usuarioRepository.save(usuario);
+    }
+
+    public Usuario obtenerUsuario(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+    }
+
+    public Usuario actualizarUsuario(Long id, Usuario nuevosDatos) {
+        Usuario usuario = obtenerUsuario(id);
+        usuario.setNombre(nuevosDatos.getNombre());
+        usuario.setEmail(nuevosDatos.getEmail());
+        return usuarioRepository.save(usuario);
+    }
+
+    public void eliminarUsuario(Long id) {
+        usuarioRepository.deleteById(id);
+    }
+}
+```
+### Gestión de Transacciones
 
 Las transacciones garantizan la integridad y consistencia de los datos en operaciones que involucran múltiples cambios en la base de datos.
 
-### Importancia de las Transacciones
+#### Importancia de las Transacciones
 
-- **Atomicidad:** Asegura que todas las operaciones dentro de una transacción se completen correctamente o ninguna lo hace.
-- **Consistencia:** Mantiene la base de datos en un estado consistente antes y después de la transacción.
+- **Atomicidad:** Todas las operaciones se completan o ninguna lo hace.
+- **Consistencia:** Mantiene la base de datos en un estado coherente.
 - **Aislamiento:** Las transacciones concurrentes no interfieren entre sí.
-- **Durabilidad:** Una vez que una transacción se compromete, sus cambios persisten incluso en caso de fallos.
+- **Durabilidad:** Los cambios persisten incluso en caso de fallos.
 
-### Uso de `@Transactional`
+#### Uso de `@Transactional`
 
-En Spring, puedes gestionar transacciones mediante la anotación `@Transactional`, es conveniente usarla donde se realicen cambios en la base de datos .
-
-#### Ejemplo:
+En Spring, puedes gestionar transacciones mediante la anotación `@Transactional`.
 
 ```java
 @Service
@@ -546,7 +552,6 @@ public class PedidoService {
 
     @Transactional
     public void procesarPedido(Pedido pedido) {
-        // Operaciones que forman parte de la transacción
         pedidoRepository.save(pedido);
         actualizarStock(pedido.getProductos());
     }
@@ -560,29 +565,19 @@ public class PedidoService {
 }
 ```
 
----
+### Lanzamiento de Excepciones
 
-## Lanzamiento de Excepciones
-
-Cuando realizamos operaciones de actualización sobre una entidad, es posible que el objeto que intentamos modificar no exista en la base de datos. En estos casos, podemos lanzar una excepción personalizada, como `ResourceNotFoundException`.
-
-#### Ejemplo:
+Cuando realizamos operaciones sobre una entidad, es posible que el objeto que intentamos modificar no exista en la base de datos. Podemos lanzar una excepción personalizada, como `ResourceNotFoundException`.
 
 ```java
-public void actualizarUsuario(Long id, Usuario nuevosDatos) {
-    Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-    usuario.setNombre(nuevosDatos.getNombre());
-    usuario.setEmail(nuevosDatos.getEmail());
-    usuarioRepository.save(usuario);
+public Usuario obtenerUsuario(Long id) {
+    return usuarioRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 }
 ```
 
-En este caso, si el usuario con el ID proporcionado no existe, se lanza una `ResourceNotFoundException` con un mensaje explicativo.
-
-Esta clase `ResourceNotFoundException` la debemos crear extendiendo de la clase padre RuntimeException:
-
 ```java
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
+@ResponseStatus(HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {
 
     public ResourceNotFoundException(String mensaje) {
@@ -590,13 +585,20 @@ public class ResourceNotFoundException extends RuntimeException {
     }
 }
 ```
-Esta excepción personalizada se usa para indicar que un recurso no ha sido encontrado. Al estar anotada con `@ResponseStatus(HttpStatus.NOT_FOUND)`, devolverá automáticamente un código de estado HTTP 404 (Not Found) al cliente cuando sea lanzada.
+
+### Buenas Prácticas en la Capa de Servicio
+
+- **Separación de Responsabilidades:** Mantén la lógica de negocio en los servicios, no en los controladores o repositorios.
+- **Inyección de Dependencias:** Utiliza constructor o campos con `@Autowired` para inyectar repositorios u otros servicios.
+- **Gestión de Excepciones:** Maneja las excepciones y proporciona mensajes claros.
+- **Transaccionalidad:** Usa `@Transactional` cuando sea necesario para asegurar la consistencia de los datos.
 
 ---
 
 ## Ejemplo Práctico Ampliado
 
 Desarrollaremos una aplicación para gestionar una biblioteca, con las siguientes entidades:
+
 - **Libro**
 - **Autor**
 - **Editorial**
@@ -606,9 +608,6 @@ Desarrollaremos una aplicación para gestionar una biblioteca, con las siguiente
 #### Entidad Autor
 
 ```java
-import javax.persistence.*;
-import java.util.List;
-
 @Entity
 public class Autor {
 
@@ -628,9 +627,6 @@ public class Autor {
 #### Entidad Editorial
 
 ```java
-import javax.persistence.*;
-import java.util.List;
-
 @Entity
 public class Editorial {
 
@@ -650,9 +646,6 @@ public class Editorial {
 #### Entidad Libro
 
 ```java
-import javax.persistence.*;
-import java.util.List;
-
 @Entity
 public class Libro {
 
@@ -695,9 +688,6 @@ public interface EditorialRepository extends JpaRepository<Editorial, Long> {
 ### Servicio con Transacciones y Consultas Personalizadas
 
 ```java
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 @Service
 public class BibliotecaService {
 
@@ -711,18 +701,24 @@ public class BibliotecaService {
     private EditorialRepository editorialRepository;
 
     @Transactional
-    public void agregarNuevoLibro(Libro libro, List<Autor> autores, Editorial editorial) {
-        // Guardar o actualizar la editorial
-        editorialRepository.save(editorial);
+    public void agregarNuevoLibro(LibroDTO libroDTO) {
+        // Convertir DTO a entidad Libro
+        Libro libro = new Libro();
+        libro.setTitulo(libroDTO.getTitulo());
+
+        // Asignar editorial
+        Editorial editorial = editorialRepository.findById(libroDTO.getEditorialId())
+                .orElseThrow(() -> new ResourceNotFoundException("Editorial no encontrada"));
         libro.setEditorial(editorial);
 
-        // Guardar o actualizar los autores
-        for (Autor autor : autores) {
-            autorRepository.save(autor);
+        // Asignar autores
+        List<Autor> autores = autorRepository.findAllById(libroDTO.getAutoresIds());
+        if (autores.isEmpty()) {
+            throw new ResourceNotFoundException("Autores no encontrados");
         }
         libro.setAutores(autores);
 
-        // Guardar el libro
+        // Guardar libro
         libroRepository.save(libro);
     }
 
@@ -735,9 +731,6 @@ public class BibliotecaService {
 ### Controlador con Método Completado
 
 ```java
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
-
 @RestController
 @RequestMapping("/biblioteca")
 public class BibliotecaController {
@@ -746,24 +739,9 @@ public class BibliotecaController {
     private BibliotecaService bibliotecaService;
 
     @PostMapping("/libros")
-    public void agregarLibro(@RequestBody LibroDTO libroDTO) {
-        // Conversión de DTO a entidades
-        Libro libro = new Libro();
-        libro.setTitulo(libroDTO.getTitulo());
-
-        // Convertir lista de IDs de autores a entidades
-        List<Autor> autores = autorRepository.findAllById(libroDTO.getAutoresIds());
-
-        // Obtener o crear la editorial
-        Editorial editorial = editorialRepository.findById(libroDTO.getEditorialId())
-                .orElseGet(() -> {
-                    Editorial nuevaEditorial = new Editorial();
-                    nuevaEditorial.setNombre(libroDTO.getEditorialNombre());
-                    return nuevaEditorial;
-                });
-
-        // Llamada al servicio
-        bibliotecaService.agregarNuevoLibro(libro, autores, editorial);
+    public ResponseEntity<String> agregarLibro(@RequestBody LibroDTO libroDTO) {
+        bibliotecaService.agregarNuevoLibro(libroDTO);
+        return ResponseEntity.ok("Libro agregado exitosamente");
     }
 
     @GetMapping("/libros")
@@ -773,14 +751,13 @@ public class BibliotecaController {
 }
 ```
 
-#### Definición de `LibroDTO`
+### Definición de `LibroDTO`
 
 ```java
 public class LibroDTO {
     private String titulo;
     private List<Long> autoresIds;
     private Long editorialId;
-    private String editorialNombre; // En caso de que la editorial no exista
 
     // Getters y Setters
 }
@@ -792,7 +769,8 @@ public class LibroDTO {
 
 ### Ejercicio 1: Configuración Inicial
 
-### Tareas:
+**Tareas:**
+
 1. Crea un nuevo proyecto Spring Boot.
 2. Incluye las dependencias necesarias en el `pom.xml`.
 3. Configura la conexión a la base de datos H2 en `application.properties`.
@@ -801,7 +779,8 @@ public class LibroDTO {
 
 ### Ejercicio 2: Definición de Entidades y Repositorios
 
-### Tareas:
+**Tareas:**
+
 1. Crea una entidad `Cliente` con los siguientes campos:
     - `id` (Long)
     - `nombre` (String)
@@ -813,7 +792,8 @@ public class LibroDTO {
 
 ### Ejercicio 3: Crear las entidades Viaje y PaqueteTuristico y relaciones
 
-### Tareas:
+**Tareas:**
+
 1. Crea una entidad `Viaje` con los siguientes campos:
     - `id` (Long)
     - `destino` (String)
@@ -826,54 +806,53 @@ public class LibroDTO {
     - `descripcion` (String)
     - `precioTotal` (float)
 3. Establece las relaciones:
-    - Un `Cliente` puede tener muchos `Viajes` (relación @OneToMany).
-    - Un `PaqueteTuristico` puede tener varios `Viaje`s (relación @OneToMany).
-    - Un `Cliente` puede reservar varios `PaqueteTuristico`s y un `PaqueteTuristico` puede ser reservado por varios clientes (relación @ManyToMany).
+    - Un `Cliente` puede tener muchos `Viajes` (`@OneToMany`).
+    - Un `PaqueteTuristico` puede tener varios `Viajes` (`@OneToMany`).
+    - Un `Cliente` puede reservar varios `PaqueteTuristico`s y un `PaqueteTuristico` puede ser reservado por varios clientes (`@ManyToMany`).
 4. Genera las tablas correspondientes en la base de datos utilizando JPA.
 
 ---
 
 ### Ejercicio 4: CRUD de Viaje
 
-### Tareas:
-1. Crea un servicio que permita realizar operaciones CRUD sobre `Viaje` y después crea un controlador con un endpoint para cada una de estas operaciones.
+**Tareas:**
+
+1. Crea un servicio que permita realizar operaciones CRUD sobre `Viaje`.
+2. Crea un controlador con endpoints para cada operación:
     - Crear un nuevo viaje.
     - Obtener todos los viajes.
     - Actualizar un viaje existente.
     - Eliminar un viaje.
-2. Además crea otro endpoint con su correspondiente servicio para que el cliente pueda listar todos los viajes que ha reservado.
+3. Añade un endpoint para que el cliente pueda listar todos los viajes que ha reservado.
 
 ---
 
 ### Ejercicio 5: Búsqueda de viajes por destino o rango de precios
 
-### Tareas:
-1. Implementa un método en el repositorio `ViajeRepository` para buscar viajes por destino.
-2. Implementa un método en el repositorio para buscar viajes dentro de un rango de precios.
+**Tareas:**
+
+1. Implementa un método en `ViajeRepository` para buscar viajes por destino.
+2. Implementa un método para buscar viajes dentro de un rango de precios.
 3. Añade un controlador que permita a los usuarios buscar viajes utilizando estos filtros.
 
 ---
 
 ### Ejercicio 6: Asignación de paquetes turísticos a clientes
 
-### Tareas:
+**Tareas:**
+
 1. Crea un controlador que permita asignar un `PaqueteTuristico` a un `Cliente`.
-2. Implementa una funcionalidad para mostrar los detalles de un `PaqueteTuristico` junto con los viajes incluidos en él.
+2. Implementa una funcionalidad para mostrar los detalles de un `PaqueteTuristico` junto con los viajes incluidos.
 3. Asegúrate de que los clientes puedan ver los paquetes que han reservado.
 
 ---
 
 ### Ejercicio 7: Calcular el precio total de los viajes de un cliente
 
-### Tareas:
+**Tareas:**
+
 1. En el servicio de `Cliente`, implementa un método que calcule el precio total de todos los viajes reservados por un cliente.
 2. Añade un endpoint en el controlador para mostrar el precio total de los viajes del cliente.
-
----
-
-## Conclusión
-
-Spring Data JPA simplifica enormemente el manejo de datos en aplicaciones Spring Boot. Al entender cómo definir entidades, mapear relaciones y gestionar transacciones, puedes desarrollar aplicaciones robustas y eficientes. Las consultas personalizadas y el manejo adecuado de las transacciones permiten crear aplicaciones complejas de manera sencilla y segura.
 
 ---
 
