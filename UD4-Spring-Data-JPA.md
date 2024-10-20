@@ -50,13 +50,6 @@
   - [Controlador con Método Completado](#controlador-con-método-completado)
   - [Definición de `LibroDTO`](#definición-de-librodto)
 - [Ejercicios Propuestos](#ejercicios-propuestos)
-  - [Ejercicio 1: Configuración Inicial](#ejercicio-1-configuración-inicial)
-  - [Ejercicio 2: Definición de Entidades y Repositorios](#ejercicio-2-definición-de-entidades-y-repositorios)
-  - [Ejercicio 3: Crear las entidades Viaje y PaqueteTuristico y relaciones](#ejercicio-3-crear-las-entidades-viaje-y-paqueteturistico-y-relaciones)
-  - [Ejercicio 4: CRUD de Viaje](#ejercicio-4-crud-de-viaje)
-  - [Ejercicio 5: Búsqueda de viajes por destino o rango de precios](#ejercicio-5-búsqueda-de-viajes-por-destino-o-rango-de-precios)
-  - [Ejercicio 6: Asignación de paquetes turísticos a clientes](#ejercicio-6-asignación-de-paquetes-turísticos-a-clientes)
-  - [Ejercicio 7: Calcular el precio total de los viajes de un cliente](#ejercicio-7-calcular-el-precio-total-de-los-viajes-de-un-cliente)
 - [Referencias](#referencias)
 
 ---
