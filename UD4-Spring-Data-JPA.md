@@ -11,16 +11,36 @@
 - [Operaciones CRUD Básicas](#operaciones-crud-básicas)
   - [Equivalencia entre SQL y JPA](#equivalencia-entre-sql-y-jpa)
 - [Consultas Personalizadas](#consultas-personalizadas)
+  - [Métodos Derivados](#métodos-derivados)
+  - [Uso de la Anotación `@Query`](#uso-de-la-anotación-query)
+  - [Consultas Nativas](#consultas-nativas)
 - [Relaciones entre Entidades](#relaciones-entre-entidades)
   - [Tipos de Relaciones](#tipos-de-relaciones)
-  - [Ejemplo Completo de Relaciones](#ejemplo-completo-de-relaciones)
+  - [Explicación Detallada de Cada Anotación](#explicación-detallada-de-cada-anotación)
+    - [@OneToOne](#onetoone)
+    - [@OneToMany y @ManyToOne](#onetomany-y-manytoone)
+    - [@ManyToMany](#manytomany)
+    - [Clave Compuesta con `@EmbeddedId`](#clave-compuesta-con-embeddedid)
 - [Gestión de Transacciones](#gestión-de-transacciones)
   - [Importancia de las Transacciones](#importancia-de-las-transacciones)
   - [Uso de `@Transactional`](#uso-de-transactional)
 - [Lanzamiento de Excepciones](#lanzamiento-de-excepciones)
 - [Ejemplo Práctico Ampliado](#ejemplo-práctico-ampliado)
+  - [Entidades y Relaciones](#entidades-y-relaciones)
+  - [Repositorios](#repositorios)
+  - [Servicio con Transacciones y Consultas Personalizadas](#servicio-con-transacciones-y-consultas-personalizadas)
+  - [Controlador con Método Completado](#controlador-con-método-completado)
+  - [Definición de `LibroDTO`](#definición-de-librodto)
 - [Ejercicios Propuestos](#ejercicios-propuestos)
+  - [Ejercicio 1: Configuración Inicial](#ejercicio-1-configuración-inicial)
+  - [Ejercicio 2: Definición de Entidades y Repositorios](#ejercicio-2-definición-de-entidades-y-repositorios)
+  - [Ejercicio 3: Crear las entidades Viaje y PaqueteTuristico y relaciones](#ejercicio-3-crear-las-entidades-viaje-y-paqueteturistico-y-relaciones)
+  - [Ejercicio 4: CRUD de Viaje](#ejercicio-4-crud-de-viaje)
+  - [Ejercicio 5: Búsqueda de viajes por destino o rango de precios](#ejercicio-5-búsqueda-de-viajes-por-destino-o-rango-de-precios)
+  - [Ejercicio 6: Asignación de paquetes turísticos a clientes](#ejercicio-6-asignación-de-paquetes-turísticos-a-clientes)
+  - [Ejercicio 7: Calcular el precio total de los viajes de un cliente](#ejercicio-7-calcular-el-precio-total-de-los-viajes-de-un-cliente)
 - [Conclusión](#conclusión)
+
 
 ---
 
@@ -86,7 +106,7 @@ spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.hibernate.ddl-auto=update
 ```
 
-```
+```properties
 # Configuración de la base de datos MySQL
 spring.datasource.url=jdbc:mysql://localhost:3306/nombre_base_datos
 spring.datasource.username=nombre_usuario
@@ -220,7 +240,7 @@ También podemos buscar de esta manera, lanzando una excepción si no lo encuent
 ```java
 public Usuario obtenerUsuario(Long id) {
     Usuario usuario = usuarioService.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     return usuario;
 }
 ```
@@ -304,6 +324,23 @@ Esta anotación se utiliza cuando un registro de una entidad está relacionado c
 
 ```java
 @Entity
+public class Perfil {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String nombre;
+
+    @OneToOne(mappedBy = "perfil") //Indica que la clave foránea está en la clase Usuario
+    private Usuario usuario;
+    
+    // Getters y Setters
+}
+```
+
+```java
+@Entity
 public class Usuario {
     
     @Id
@@ -320,7 +357,8 @@ public class Usuario {
 }
 ```
 
-En este caso, la tabla `Usuario` tendrá una columna `perfil_id` que actúa como clave foránea para relacionar al usuario con un perfil en la tabla `Perfil`.
+En este caso, la tabla `Usuario` tendrá una columna `perfil_id` que actúa como clave foránea para relacionar al usuario con un perfil en la tabla `Perfil`. La entidad `Usuario` es la propietaria de la relación, y el campo `mappedBy = "perfil"` indica que el atributo que gestiona esta relación está en la entidad `Perfil`.
+
 
 #### **@OneToMany y @ManyToOne**
 Estas anotaciones definen relaciones donde una entidad puede tener varios registros relacionados con otra. En una relación `OneToMany`, el lado "uno" de la relación suele ser propietario de la relación, y en la base de datos se define mediante una clave foránea en la entidad "muchos". Por ejemplo, un cliente puede tener muchos pedidos:
@@ -389,6 +427,7 @@ public class Libro {
     // Getters y Setters
 }
 ```
+En este caso, la anotación `@JoinTable` se utiliza para crear una tabla intermedia llamada `libro_autor` en la base de datos. Esta tabla contiene dos columnas: `libro_id` y `autor_id`, que son claves foráneas referenciando los identificadores de las tablas `Libro` y `Autor` respectivamente.
 
 En la entidad `Autor`, también especificamos la relación:
 
@@ -411,6 +450,71 @@ public class Autor {
 
 Aquí, la tabla intermedia `libro_autor` almacenará los IDs de ambos `Libro` y `Autor` para representar las relaciones entre ellos.
 
+### Clave Compuesta con `@EmbeddedId`
+
+A veces, necesitamos que una tabla tenga más de una columna como clave primaria, es decir, una **clave compuesta**. En JPA, esto se logra con dos anotaciones principales:
+
+- **`@Embeddable`**: Para crear una clase que representa las columnas de la clave compuesta.
+- **`@EmbeddedId`**: Para usar esa clase como la clave primaria en una entidad.
+
+#### Paso 1: Crear la Clase Embebida con `@Embeddable`
+
+Esta clase contendrá las columnas que forman la clave compuesta, como por ejemplo los IDs de dos entidades relacionadas.
+
+```java
+@Embeddable
+public class MatriculaId implements Serializable {
+    private Long estudianteId;
+    private Long asignaturaId;
+
+    // Constructores, Getters y Setters
+
+
+    // Sobrescribir equals() y hashCode()
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MatriculaId that = (MatriculaId) o;
+        return estudianteId.equals(that.estudianteId) && asignaturaId.equals(that.asignaturaId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(estudianteId, asignaturaId);
+    }
+}
+```
+- Implementa `equals()` y `hashCode()` para garantizar la correcta comparación y uso en estructuras de datos como `Set` o `Map`.
+
+#### Paso 2: Usar `@EmbeddedId` en la Entidad
+En la entidad `Matricula`, usamos la clase `MatriculaId` como clave primaria.
+
+```java
+@Entity
+public class Matricula {
+
+    @EmbeddedId
+    private MatriculaId id;
+
+    @ManyToOne
+    @JoinColumn(name = "estudiante_id")
+    @MapsId("estudianteId")
+    private Estudiante estudiante;
+
+    @ManyToOne
+    @JoinColumn(name = "asignatura_id")
+    @MapsId("asignaturaId")
+    private Asignatura asignatura;
+
+    private String periodo;
+
+    // Constructores, Getters y Setters
+}
+```
+- `@MapsId`: Enlaza cada una de las claves foráneas con los campos de `MatriculaId`
+
 ---
 
 ## Gestión de Transacciones
@@ -426,14 +530,11 @@ Las transacciones garantizan la integridad y consistencia de los datos en operac
 
 ### Uso de `@Transactional`
 
-En Spring, puedes gestionar transacciones mediante la anotación `@Transactional`.
+En Spring, puedes gestionar transacciones mediante la anotación `@Transactional`, es conveniente usarla donde se realicen cambios en la base de datos .
 
 #### Ejemplo:
 
 ```java
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 @Service
 public class PedidoService {
 
@@ -477,6 +578,19 @@ public void actualizarUsuario(Long id, Usuario nuevosDatos) {
 ```
 
 En este caso, si el usuario con el ID proporcionado no existe, se lanza una `ResourceNotFoundException` con un mensaje explicativo.
+
+Esta clase `ResourceNotFoundException` la debemos crear extendiendo de la clase padre RuntimeException:
+
+```java
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+public class ResourceNotFoundException extends RuntimeException {
+
+    public ResourceNotFoundException(String mensaje) {
+        super(mensaje);
+    }
+}
+```
+Esta excepción personalizada se usa para indicar que un recurso no ha sido encontrado. Al estar anotada con `@ResponseStatus(HttpStatus.NOT_FOUND)`, devolverá automáticamente un código de estado HTTP 404 (Not Found) al cliente cuando sea lanzada.
 
 ---
 
