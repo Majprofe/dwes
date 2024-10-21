@@ -1,4 +1,4 @@
-# Desarrollo Web en Entorno Cliente
+# Desarrollo Web en Entorno Servidor
 Apuntes del módulo de "Desarrollo Web en Entorno Servidor" de 2º curso del CFGS "Desarrollo de Aplicaciones Web". 
 
 ## Contenidos
