@@ -48,7 +48,7 @@ Para integrar Swagger en tu proyecto Spring Boot, añade las siguientes dependen
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.6.14</version>
+            <version>1.8.0</version>
         </dependency>
     </dependencies>
     ```
