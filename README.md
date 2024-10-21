@@ -2,8 +2,8 @@
 Apuntes del módulo de "Desarrollo Web en Entorno Servidor" de 2º curso del CFGS "Desarrollo de Aplicaciones Web". 
 
 ## Contenidos
-- [UD0 - Introducción y conceptos básicos](./UD0-Introduccion/README.md)
-- [UD1 - Arquitecturas y tecnologías en la programación web](./UD1-Arquitecturasytecnologias.md)
+- [UD0: Introducción y conceptos básicos](./UD0-Introduccion/README.md)
+- [UD1: Arquitecturas y tecnologías en la programación web](./UD1-Arquitecturasytecnologias.md)
 - [UD2: Introducción a Spring Boot](./UD2-Introduccion-a-spring-boot.md)
 - [UD3: Controladores, Rutas y el Patrón MVC en Spring Boot](./UD3-Controladores-rutas-mvc.md)
 - [UD4: Gestión de datos con Spring Data JPA](./UD4-Spring-Data-JPA.md)

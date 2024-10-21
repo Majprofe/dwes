@@ -10,15 +10,15 @@
 3. [Controladores en Spring Boot](#controladores-en-spring-boot)
    - [3.1 Creación de un Controlador](#31-creación-de-un-controlador)
    - [3.2 Anotaciones Comunes](#32-anotaciones-comunes)
-   - [3.3 Uso de ResponseEntity](#33-uso-de-responseentity)
-4. [Mapeo de Rutas y Solicitudes](#mapeo-de-rutas-y-solicitudes)
-   - [4.1 Anotaciones de Mapeo](#41-anotaciones-de-mapeo)
-   - [4.2 Manejo de Parámetros](#42-manejo-de-parámetros)
-5. [Vistas y Plantillas](#vistas-y-plantillas)
-   - [5.1 Introducción a Thymeleaf](#51-introducción-a-thymeleaf)
-   - [5.2 Integración de Thymeleaf en Spring Boot](#52-integración-de-thymeleaf-en-spring-boot)
-6. [Pasando Datos entre Modelo y Vista](#pasando-datos-entre-modelo-y-vista)
-7. [Ejercicios](#ejercicios)
+4. [Uso de ResponseEntity](#uso-de-responseentity)
+5. [Mapeo de Rutas y Solicitudes](#mapeo-de-rutas-y-solicitudes)
+   - [5.1 Anotaciones de Mapeo](#51-anotaciones-de-mapeo)
+   - [5.2 Manejo de Parámetros](#52-manejo-de-parámetros)
+6. [Vistas y Plantillas](#vistas-y-plantillas)
+   - [6.1 Introducción a Thymeleaf](#61-introducción-a-thymeleaf)
+   - [6.2 Integración de Thymeleaf en Spring Boot](#62-integración-de-thymeleaf-en-spring-boot)
+7. [Pasando Datos entre Modelo y Vista](#pasando-datos-entre-controlador-y-vista)
+8. [Ejercicios](#ejercicios)
 
 
 ---
@@ -205,7 +205,7 @@ return ResponseEntity.status(HttpStatus.CREATED).build(); //Sólo devuelve el es
 
 ## Mapeo de Rutas y Solicitudes
 
-### 4.1 Anotaciones de Mapeo
+### 5.1 Anotaciones de Mapeo
 
 - **`@RequestMapping`**: Define rutas y métodos HTTP.
 
@@ -219,7 +219,7 @@ return ResponseEntity.status(HttpStatus.CREATED).build(); //Sólo devuelve el es
   - `@PutMapping("/ruta")`
   - `@DeleteMapping("/ruta")`
 
-### 4.2 Manejo de Parámetros
+### 5.2 Manejo de Parámetros
 
 - **Parámetros de Ruta (Path Variables):**
 
@@ -255,7 +255,7 @@ La llamada desde el cliente sería: `http://localhost:8080/addreserva`
 
 ## Vistas y Plantillas
 
-### 5.1 Introducción a Thymeleaf
+### 6.1 Introducción a Thymeleaf
 
 **Thymeleaf** es un motor de plantillas moderno y versátil para Java, integrado fácilmente con Spring Boot.
 
@@ -263,7 +263,7 @@ La llamada desde el cliente sería: `http://localhost:8080/addreserva`
 - Soporta internacionalización.
 - Permite previsualizar plantillas sin necesidad de ejecutar la aplicación.
 
-### 5.2 Integración de Thymeleaf en Spring Boot
+### 6.2 Integración de Thymeleaf en Spring Boot
 
 Spring Boot incluye soporte para Thymeleaf por defecto cuando se agrega la dependencia.
 
