@@ -2,23 +2,25 @@
 
 ## Índice
 
-- [¿Qué es Swagger?](#qué-es-swagger)
-- [Ventajas de Utilizar Swagger](#ventajas-de-utilizar-swagger)
-- [Integración de Swagger en un Proyecto Spring Boot](#integración-de-swagger-en-un-proyecto-spring-boot)
-  - [Dependencias Necesarias](#dependencias-necesarias)
-  - [Configuración Básica](#configuración-básica)
-  - [Accediendo a Swagger UI](#accediendo-a-swagger-ui)
-- [Personalización de la Documentación](#personalización-de-la-documentación)
-  - [Anotaciones Comunes](#anotaciones-comunes)
-  - [Ejemplo de Uso](#ejemplo-de-uso)
-- [Swagger UI](#swagger-ui)
-  - [Características](#características)
-- [Buenas Prácticas](#buenas-prácticas)
-- [Ejercicios Propuestos](#ejercicios-propuestos)
-  - [Ejercicio 1: Integrar Swagger en un Proyecto Existente](#ejercicio-1-integrar-swagger-en-un-proyecto-existente)
-  - [Ejercicio 2: Personalizar la Documentación](#ejercicio-2-personalizar-la-documentación)
-  - [Ejercicio 3: Probar Endpoints con Swagger UI](#ejercicio-3-probar-endpoints-con-swagger-ui)
-- [Referencias](#referencias)
+1. [¿Qué es Swagger?](#qué-es-swagger)
+2. [Ventajas de Utilizar Swagger](#ventajas-de-utilizar-swagger)
+3. [Integración de Swagger en un Proyecto Spring Boot](#integración-de-swagger-en-un-proyecto-spring-boot)  
+   3.1. [Dependencias Necesarias](#dependencias-necesarias)  
+   3.2. [Configuración Básica](#configuración-básica)  
+   3.3. [Accediendo a Swagger UI](#accediendo-a-swagger-ui)
+4. [Personalización de la Documentación](#personalización-de-la-documentación)  
+   4.1. [Anotaciones Comunes](#anotaciones-comunes)  
+   4.2. [Ejemplo de Uso](#ejemplo-de-uso)
+5. [Swagger UI](#swagger-ui)  
+   5.1. [Características](#características)
+6. [Buenas Prácticas](#buenas-prácticas)
+7. [Ejercicios Propuestos](#ejercicios-propuestos)  
+   7.1. [Ejercicio 1: Integrar Swagger en un Proyecto Existente](#ejercicio-1-integrar-swagger-en-un-proyecto-existente)  
+   7.2. [Ejercicio 2: Personalizar la Documentación](#ejercicio-2-personalizar-la-documentación)  
+   7.3. [Ejercicio 3: Probar Endpoints con Swagger UI](#ejercicio-3-probar-endpoints-con-swagger-ui)
+8. [Referencias](#referencias)
+
+
 
 ---
 ## ¿Qué es Swagger?
