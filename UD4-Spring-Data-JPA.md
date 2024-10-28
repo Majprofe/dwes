@@ -344,7 +344,7 @@ public class Perfil {
 
     private String biografia;
 
-    @OneToOne(mappedBy = "perfil")
+    @OneToOne(mappedBy = "perfil") //Indica que la clave foránea está en la clase Usuario
     private Usuario usuario;
 
     // Getters y Setters
@@ -369,9 +369,10 @@ public class Usuario {
 }
 ```
 
-#### **@OneToMany y @ManyToOne**
+En este caso, la tabla `Usuario` tendrá una columna `perfil_id` que actúa como clave foránea para relacionar al usuario con un perfil en la tabla `Perfil`. La entidad `Usuario` es la propietaria de la relación, y el campo `mappedBy = "perfil"` indica que el atributo que gestiona esta relación está en la entidad `Perfil`.
 
-Modela relaciones donde una entidad está vinculada a muchas otras.
+#### **@OneToMany y @ManyToOne**
+Estas anotaciones definen relaciones donde una entidad puede tener varios registros relacionados con otra. En una relación `OneToMany`, el lado "uno" de la relación suele ser propietario de la relación, y en la base de datos se define mediante una clave foránea en la entidad "muchos". Por ejemplo, un cliente puede tener muchos pedidos:
 
 ```java
 @Entity
@@ -451,42 +452,57 @@ public class Curso {
 }
 ```
 
+En este caso, la anotación `@JoinTable` se utiliza para crear una tabla intermedia llamada `estudiante_curso` en la base de datos. Esta tabla contiene dos columnas: `estudiante_id` y `curso_id`, que son claves foráneas referenciando los identificadores de las tablas `Estudiante` y `Curso` respectivamente.
+
 ### Clave Compuesta con `@EmbeddedId`
-
-Para tablas con claves primarias compuestas.
-
+A veces, necesitamos que una tabla tenga más de una columna como clave primaria, es decir, una **clave compuesta**. En JPA, esto se logra con dos anotaciones principales:
+- **`@Embeddable`**: Para crear una clase que representa las columnas de la clave compuesta.
+- **`@EmbeddedId`**: Para usar esa clase como la clave primaria en una entidad.
+  
+#### Paso 1: Crear la Clase Embebida con `@Embeddable`
+Esta clase contendrá las columnas que forman la clave compuesta, como por ejemplo los IDs de dos entidades relacionadas.
 ```java
 @Embeddable
 public class MatriculaId implements Serializable {
     private Long estudianteId;
-    private Long cursoId;
-
-    // Constructores, equals() y hashCode()
+    private Long asignaturaId;
+    // Constructores, Getters y Setters
+    // Sobrescribir equals() y hashCode()
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MatriculaId that = (MatriculaId) o;
+        return estudianteId.equals(that.estudianteId) && asignaturaId.equals(that.asignaturaId);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(estudianteId, asignaturaId);
+    }
 }
 ```
+- Implementa `equals()` y `hashCode()` para garantizar la correcta comparación y uso en estructuras de datos como `Set` o `Map`.
 
+#### Paso 2: Usar `@EmbeddedId` en la Entidad
+En la entidad `Matricula`, usamos la clase `MatriculaId` como clave primaria.
 ```java
 @Entity
 public class Matricula {
-
     @EmbeddedId
     private MatriculaId id;
-
     @ManyToOne
-    @MapsId("estudianteId")
     @JoinColumn(name = "estudiante_id")
+    @MapsId("estudianteId")
     private Estudiante estudiante;
-
     @ManyToOne
-    @MapsId("cursoId")
-    @JoinColumn(name = "curso_id")
-    private Curso curso;
-
-    private LocalDate fechaMatricula;
-
-    // Getters y Setters
+    @JoinColumn(name = "asignatura_id")
+    @MapsId("asignaturaId")
+    private Asignatura asignatura;
+    private String periodo;
+    // Constructores, Getters y Setters
 }
 ```
+- `@MapsId`: Enlaza cada una de las claves foráneas con los campos de `MatriculaId`
 
 ---
 
