@@ -26,15 +26,12 @@ Vas a desarrollar un sistema básico para gestionar **productos**, **pedidos** y
   2. **Pedido**:
      - `id`: Long (autogenerado).
      - `fecha`: LocalDate.
-     - `productos`: Relación ManyToMany con `Producto`.
-     - `cliente`: Relación ManyToOne con `Cliente`.
      - `total`: Double (se calcula automáticamente).
 
   3. **Cliente**:
      - `id`: Long (autogenerado).
      - `nombre`: String.
      - `email`: String.
-     - `pedidos`: Relación OneToMany con `Pedido`.
 
 - **Relaciones:**  
   - Un cliente puede tener múltiples pedidos.
