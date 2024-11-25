@@ -302,7 +302,7 @@ List<Usuario> findByNombreAndEmail(String nombre, String email);
 List<Usuario> findByNombreContaining(String fragmentoNombre);
 ```
 
-[Palabras clave para métodos de consulta en JPA](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation)
+[Palabras clave para métodos de consulta en JPA](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html).
 
 ### Uso de la Anotación `@Query`
 
