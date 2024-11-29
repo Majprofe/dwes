@@ -10,7 +10,12 @@ Propuestas para practicar la creación de servicios en Spring Boot. Cada ejercic
 ### Entidades:
 - **Usuario**: `id`, `nombre`, `email`
 - **Proyecto**: `id`, `nombre`, `descripcion`
-- **Tarea**: `id`, `titulo`, `descripcion`, `estado` (Pendiente, En progreso, Completada), `usuarioAsignado`, `proyecto`
+- **Tarea**: `id`, `titulo`, `descripcion`, `estado` (Pendiente, En progreso, Completada)
+
+### Diagrama Relacional:
+- **Proyecto** (1) ↔ (N) **Tarea**  
+- **Proyecto** (N) ↔ (N) **Usuario**  
+- **Usuario** (1) ↔ (N) **Tarea**
 
 ### Servicios:
 #### 1. Crear Proyecto
@@ -55,8 +60,12 @@ Propuestas para practicar la creación de servicios en Spring Boot. Cada ejercic
 
 ### Entidades:
 - **Usuario**: `id`, `nombre`, `email`
-- **Evento**: `id`, `nombre`, `fecha`, `capacidadMaxima`, `usuariosReservados`
-- **Reserva**: `id`, `usuario`, `evento`
+- **Evento**: `id`, `nombre`, `fecha`, `capacidadMaxima`
+- **Reserva**: `id`
+
+### Diagrama Relacional Simplificado:
+- **Usuario** (1) ↔ (N) **Reserva**  
+- **Evento** (1) ↔ (N) **Reserva**
 
 ### Servicios:
 #### 1. Crear Evento
@@ -102,6 +111,10 @@ Propuestas para practicar la creación de servicios en Spring Boot. Cada ejercic
 - **Libro**: `id`, `titulo`, `autor`, `precio`, `stock`
 - **Usuario**: `id`, `nombre`, `email`, `rol` (Administrador o Cliente)
 - **Venta**: `id`, `libro`, `usuario`, `cantidad`, `total`
+
+### Diagrama Relacional:
+- **Usuario** (1) ↔ (N) **Venta**  
+- **Libro** (1) ↔ (N) **Venta**
 
 ### Servicios:
 ### 1. Añadir Stock de un Libro
@@ -164,7 +177,11 @@ Propuestas para practicar la creación de servicios en Spring Boot. Cada ejercic
 
 ### Entidades:
 - **Equipo**: `id`, `nombre`, `puntos`, `partidosGanados`, `partidosPerdidos`, `partidosEmpatados`
-- **Partido**: `id`, `equipoLocal`, `equipoVisitante`, `golesLocal`, `golesVisitante`, `estado` (Pendiente, Finalizado)
+- **Partido**: `id`, `golesLocal`, `golesVisitante`, `estado` (Pendiente, Finalizado)
+
+### Diagrama Relacional:
+- **Equipo** (1) ↔ (N) **Partido** (como equipoLocal).  
+- **Equipo** (1) ↔ (N) **Partido** (como equipoVisitante).  
 
 ### Servicios:
 #### 1. Crear Equipo
@@ -225,7 +242,11 @@ Propuestas para practicar la creación de servicios en Spring Boot. Cada ejercic
 ### Entidades:
 - **Cliente**: `id`, `nombre`, `email`
 - **Mesa**: `id`, `numero`, `capacidad`, `disponibilidad` (Disponible/Ocupada)
-- **Reserva**: `id`, `mesa`, `cliente`, `fecha`, `hora`
+- **Reserva**: `id`, `fecha`, `hora`
+
+### Diagrama Relacional:
+- **Cliente** (1) ↔ (N) **Reserva**  
+- **Mesa** (1) ↔ (N) **Reserva** 
 
 ### Servicios:
 #### 1. Hacer Reserva
