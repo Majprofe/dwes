@@ -71,11 +71,10 @@ public List<Tarea> listarTareasPorProyectoYEstado(Long proyectoId, Estado estado
 ### Servicios:
 1. **Crear Evento**
 ```java
-public Evento crearEvento(String nombre, LocalDate fecha, int capacidadMaxima) {
-    if (eventoRepository.existsByNombre(nombre)) {
+public Evento crearEvento(Evento evento) {
+    if (eventoRepository.existsByNombre(evento.getNombre())) {
         throw new EventoYaExisteException("El evento ya existe.");
     }
-    Evento evento = new Evento(nombre, fecha, capacidadMaxima);
     return eventoRepository.save(evento);
 }
 ```
@@ -198,11 +197,10 @@ public List<Venta> obtenerReporteDeVentas() {
 ### Servicios:
 1. **Crear Equipo**
 ```java
-public Equipo crearEquipo(String nombre) {
-    if (equipoRepository.existsByNombre(nombre)) {
+public Equipo crearEquipo(Equipo equipo) {
+    if (equipoRepository.existsByNombre(equipo.getnombre())) {
         throw new EquipoYaExisteException("El equipo ya existe.");
     }
-    Equipo equipo = new Equipo(nombre, 0, 0, 0, 0);
     return equipoRepository.save(equipo);
 }
 ```

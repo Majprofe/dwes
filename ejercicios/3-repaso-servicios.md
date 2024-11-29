@@ -59,11 +59,40 @@ Propuestas para practicar la creación de servicios en Spring Boot. Cada ejercic
 - **Reserva**: `id`, `usuario`, `evento`
 
 ### Servicios:
-1. **Crear Evento:** Crear un nuevo evento con una capacidad máxima de asistentes.
-2. **Hacer Reserva:** Permitir que un usuario reserve un evento. Comprobar que no supere la capacidad máxima y que el usuario no haya reservado previamente.
-3. **Cancelar Reserva:** Permitir a un usuario cancelar su reserva. Devolver la plaza al evento.
-4. **Listar Eventos Disponibles:** Mostrar eventos con plazas libres y su capacidad restante.
-5. **Obtener Lista de Asistentes por Evento:** Mostrar los usuarios que tienen reserva para un evento específico.
+#### 1. Crear Evento
+- **Descripción:** Crear un nuevo evento con una capacidad máxima de asistentes.  
+- **Parámetros:** `(Evento evento)`  
+- **Devuelve:** `Evento`  
+
+---
+
+#### 2. Hacer Reserva
+- **Descripción:** Permitir que un usuario reserve un evento.  
+- **Parámetros:** `(Long eventoId, Long usuarioId)`  
+- **Devuelve:** `Reserva`  
+- **Validación:** Comprobar que no supere la capacidad máxima y que el usuario no haya reservado previamente.
+
+---
+
+#### 3. Cancelar Reserva
+- **Descripción:** Permitir a un usuario cancelar su reserva.  
+- **Parámetros:** `(Long reservaId)`  
+- **Devuelve:** `void`  
+- **Validación:** Devolver la plaza al evento.
+
+---
+
+#### 4. Listar Eventos Disponibles
+- **Descripción:** Mostrar eventos con plazas libres y su capacidad restante.  
+- **Parámetros:** `()`  
+- **Devuelve:** `List<Evento>`
+
+---
+
+#### 5. Obtener Lista de Asistentes por Evento
+- **Descripción:** Mostrar los usuarios que tienen reserva para un evento específico.  
+- **Parámetros:** `(Long eventoId)`  
+- **Devuelve:** `List<Usuario>`
 
 ---
 
@@ -75,11 +104,59 @@ Propuestas para practicar la creación de servicios en Spring Boot. Cada ejercic
 - **Venta**: `id`, `libro`, `usuario`, `cantidad`, `total`
 
 ### Servicios:
-1. **Añadir Stock de un Libro:** Solo para administradores. Incrementar el stock de un libro existente.
-2. **Vender Libro:** Reducir el stock de un libro en función de la cantidad comprada y registrar la venta. Validar que hay suficiente stock disponible.
-3. **Listar Libros por Autor o Rango de Precio:** Devolver una lista de libros filtrados por autor o precio.
-4. **Obtener Ventas Totales por Usuario:** Calcular el total gastado por un cliente en todas sus compras.
-5. **Obtener Reporte de Ventas:** Solo para administradores. Mostrar un listado de todas las ventas, con información detallada de cada una.
+### 1. Añadir Stock de un Libro
+- **Descripción:** Incrementar el stock de un libro existente.  
+- **Parámetros:**  
+  - `Long libroId`: ID del libro.  
+  - `int cantidad`: Cantidad a añadir al stock.  
+- **Devuelve:**  
+  - `Libro`: El libro actualizado con el nuevo stock.  
+- **Validación:** Solo usuarios con rol de administrador pueden realizar esta acción.
+
+---
+
+### 2. Vender Libro
+- **Descripción:** Reducir el stock de un libro en función de la cantidad comprada y registrar la venta.  
+- **Parámetros:**  
+  - `Long libroId`: ID del libro.  
+  - `Long usuarioId`: ID del usuario que realiza la compra.  
+  - `int cantidad`: Cantidad de libros a vender.  
+- **Devuelve:**  
+  - `Venta`: La venta registrada, con detalles del libro, cantidad, y total.  
+- **Validación:**  
+  - Validar que hay suficiente stock disponible.  
+  - Registrar la venta correctamente.
+
+---
+
+### 3. Listar Libros por Autor o Rango de Precio
+- **Descripción:** Devolver una lista de libros filtrados por autor o precio.  
+- **Parámetros:**  
+  - `String autor`: Nombre del autor (opcional).  
+  - `Double minPrecio`: Precio mínimo (opcional).  
+  - `Double maxPrecio`: Precio máximo (opcional).  
+- **Devuelve:**  
+  - `List<Libro>`: Lista de libros que cumplen los criterios de búsqueda.  
+
+---
+
+### 4. Obtener Ventas Totales por Usuario
+- **Descripción:** Calcular el total gastado por un cliente en todas sus compras.  
+- **Parámetros:**  
+  - `Long usuarioId`: ID del usuario.  
+- **Devuelve:**  
+  - `Double`: El total gastado por el usuario.  
+
+---
+
+### 5. Obtener Reporte de Ventas
+- **Descripción:** Mostrar un listado de todas las ventas con información detallada (solo para administradores).  
+- **Parámetros:**  
+  - Ninguno.  
+- **Devuelve:**  
+  - `List<Venta>`: Listado de todas las ventas, con información detallada sobre libros, cantidades, precios, y compradores.  
+- **Validación:** Solo usuarios con rol de administrador pueden acceder al reporte.
+
 
 ---
 
@@ -90,11 +167,56 @@ Propuestas para practicar la creación de servicios en Spring Boot. Cada ejercic
 - **Partido**: `id`, `equipoLocal`, `equipoVisitante`, `golesLocal`, `golesVisitante`, `estado` (Pendiente, Finalizado)
 
 ### Servicios:
-1. **Crear Equipo:** Registrar un nuevo equipo en el torneo. Validar que el nombre no se repita.
-2. **Registrar Resultado de Partido:** Actualizar los puntos de los equipos en función del resultado (Ganador +3, Empate +1, Perdedor +0).
-3. **Obtener Clasificación:** Listar los equipos ordenados por puntos, con desempates por diferencia de goles.
-4. **Obtener Historial de Partidos por Equipo:** Mostrar todos los partidos jugados por un equipo.
-5. **Listar Próximos Partidos:** Mostrar los partidos pendientes con fecha y hora.
+#### 1. Crear Equipo
+- **Descripción:** Registrar un nuevo equipo en el torneo.  
+- **Entrada:**  
+  - `Equipo equipo`: equipo.  
+- **Salida:**  
+  - `Equipo`: El equipo registrado.  
+- **Validación:**  
+  - Comprobar que el nombre del equipo no se repita.
+
+---
+
+#### 2. Registrar Resultado de Partido
+- **Descripción:** Actualizar los puntos de los equipos en función del resultado del partido.  
+- **Entrada:**  
+  - `Long partidoId`: ID del partido.  
+  - `int golesLocal`: Goles del equipo local.  
+  - `int golesVisitante`: Goles del equipo visitante.  
+- **Salida:**  
+  - `Partido`: El partido actualizado con los resultados y puntos asignados.  
+- **Reglas de Puntos:**  
+  - **Ganador:** +3 puntos.  
+  - **Empate:** +1 punto.  
+  - **Perdedor:** +0 puntos.  
+
+---
+
+#### 3. Obtener Clasificación
+- **Descripción:** Listar los equipos ordenados por puntos, con desempates por diferencia de goles.  
+- **Entrada:**  
+  - Ninguna.  
+- **Salida:**  
+  - `List<Equipo>`: Lista de equipos ordenados por puntos y desempates.  
+
+---
+
+#### 4. Obtener Historial de Partidos por Equipo
+- **Descripción:** Mostrar todos los partidos jugados por un equipo específico.  
+- **Entrada:**  
+  - `Long equipoId`: ID del equipo.  
+- **Salida:**  
+  - `List<Partido>`: Lista de partidos jugados por el equipo.  
+
+---
+
+#### 5. Listar Próximos Partidos
+- **Descripción:** Mostrar los partidos pendientes con fecha y hora.  
+- **Entrada:**  
+  - Ninguna.  
+- **Salida:**  
+  - `List<Partido>`: Lista de partidos próximos con fecha y hora programadas. 
 
 ---
 
@@ -106,8 +228,53 @@ Propuestas para practicar la creación de servicios en Spring Boot. Cada ejercic
 - **Reserva**: `id`, `mesa`, `cliente`, `fecha`, `hora`
 
 ### Servicios:
-1. **Hacer Reserva:** Reservar una mesa para un cliente en una fecha y hora específicas. Validar que la mesa esté disponible.
-2. **Cancelar Reserva:** Permitir a un cliente cancelar su reserva. Cambiar el estado de la mesa a disponible.
-3. **Listar Mesas Disponibles:** Mostrar mesas disponibles para una fecha y hora específicas.
-4. **Obtener Historial de Reservas por Cliente:** Mostrar todas las reservas pasadas y futuras de un cliente.
-5. **Generar Reporte Diario de Reservas:** Mostrar un listado de todas las reservas para un día específico.
+#### 1. Hacer Reserva
+- **Descripción:** Reservar una mesa para un cliente en una fecha y hora específicas.  
+- **Entrada:**  
+  - `Long mesaId`: ID de la mesa a reservar.  
+  - `Long clienteId`: ID del cliente que realiza la reserva.  
+  - `LocalDate fecha`: Fecha de la reserva.  
+  - `LocalTime hora`: Hora de la reserva.  
+- **Salida:**  
+  - `Reserva`: La reserva creada con los detalles correspondientes.  
+- **Validación:**  
+  - Comprobar que la mesa esté disponible en la fecha y hora indicadas.
+
+---
+
+#### 2. Cancelar Reserva
+- **Descripción:** Permitir a un cliente cancelar su reserva.  
+- **Entrada:**  
+  - `Long reservaId`: ID de la reserva a cancelar.  
+- **Salida:**  
+  - `void`  
+- **Validación:**  
+  - Cambiar el estado de la mesa asociada a `Disponible`.
+
+---
+
+#### 3. Listar Mesas Disponibles
+- **Descripción:** Mostrar mesas disponibles para una fecha y hora específicas.  
+- **Entrada:**  
+  - `LocalDate fecha`: Fecha de la consulta.  
+  - `LocalTime hora`: Hora de la consulta.  
+- **Salida:**  
+  - `List<Mesa>`: Lista de mesas disponibles en la fecha y hora indicadas.  
+
+---
+
+#### 4. Obtener Historial de Reservas por Cliente
+- **Descripción:** Mostrar todas las reservas pasadas y futuras de un cliente.  
+- **Entrada:**  
+  - `Long clienteId`: ID del cliente.  
+- **Salida:**  
+  - `List<Reserva>`: Lista de reservas asociadas al cliente.  
+
+---
+
+#### 5. Generar Reporte Diario de Reservas
+- **Descripción:** Mostrar un listado de todas las reservas para un día específico.  
+- **Entrada:**  
+  - `LocalDate fecha`: Fecha del reporte.  
+- **Salida:**  
+  - `List<Reserva>`: Listado de reservas realizadas en esa fecha. 
