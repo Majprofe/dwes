@@ -13,11 +13,41 @@ Propuestas para practicar la creación de servicios en Spring Boot. Cada ejercic
 - **Tarea**: `id`, `titulo`, `descripcion`, `estado` (Pendiente, En progreso, Completada), `usuarioAsignado`, `proyecto`
 
 ### Servicios:
-1. **Crear Proyecto:** Crear un nuevo proyecto con un nombre único. Si el nombre ya existe, lanzar una excepción personalizada.
-2. **Añadir Usuario a Proyecto:** Asignar un usuario a un proyecto existente. Si el usuario ya pertenece al proyecto, no volver a asignarlo.
-3. **Crear Tarea:** Crear una tarea dentro de un proyecto y asignarla a un usuario. Validar que el usuario pertenece al proyecto.
-4. **Actualizar Estado de Tarea:** Cambiar el estado de una tarea (Pendiente → En progreso → Completada).
-5. **Listar Tareas por Proyecto y Estado:** Devolver todas las tareas de un proyecto filtradas por estado (Pendiente, En progreso, Completada).
+#### 1. Crear Proyecto
+- **Descripción:** Crear un proyecto único.  
+- **Parámetros:** `(Proyecto proyecto)`  
+- **Devuelve:** `Proyecto`  
+- **Validación:** Nombre único; lanzar excepción si ya existe.
+
+---
+
+#### 2. Añadir Usuario a Proyecto
+- **Descripción:** Asignar usuario a proyecto.  
+- **Parámetros:** `(Long proyectoId, Long usuarioId)`  
+- **Devuelve:** `Proyecto`  
+- **Validación:** Evitar duplicados.
+
+---
+
+#### 3. Crear Tarea
+- **Descripción:** Crear tarea y asignar a usuario en proyecto.  
+- **Parámetros:** `(Long proyectoId, Long usuarioId, String titulo, String descripcion)`  
+- **Devuelve:** `Tarea`  
+- **Validación:** Usuario debe pertenecer al proyecto.
+
+---
+
+#### 4. Actualizar Estado de Tarea
+- **Descripción:** Cambiar estado de tarea (`Pendiente → En progreso → Completada`).  
+- **Parámetros:** `(Long tareaId, Estado nuevoEstado)`  
+- **Devuelve:** `Tarea`
+
+---
+
+#### 5. Listar Tareas por Proyecto y Estado
+- **Descripción:** Filtrar tareas por estado en un proyecto.  
+- **Parámetros:** `(Long proyectoId, Estado estado)`  
+- **Devuelve:** `List<Tarea>`
 
 ---
 

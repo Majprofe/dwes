@@ -7,11 +7,10 @@
 ### Servicios:
 1. **Crear Proyecto**
 ```java
-public Proyecto crearProyecto(String nombre, String descripcion) {
-    if (proyectoRepository.existsByNombre(nombre)) {
-        throw new ProyectoYaExisteException("El proyecto ya existe.");
+public Proyecto crearProyecto(Proyecto proyecto) {
+    if (proyectoRepository.existsByNombre(proyecto.getNombre())) {
+        throw new ProyectoExistenteException("El proyecto con el nombre '" + proyecto.getNombre() + "' ya existe.");
     }
-    Proyecto proyecto = new Proyecto(nombre, descripcion);
     return proyectoRepository.save(proyecto);
 }
 ```
