@@ -307,7 +307,7 @@ O podemos usar el sistema de validación de Spring, que nos permite validar los 
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-validation</artifactId>
 </dependency>
-
+```
 
 De esta manera podemos usar las anotaciones de validación de Spring:
 
