@@ -152,7 +152,7 @@ La otra opción es crear nuestras sistema de excepciones ye errores asociado al 
 ```java
 // Nos permite devolver un estado cuando salta la excepción
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class TenistaNotFoundException extends TenistaException {
+public class TenistaNotFoundException extends RuntimeException {
     public TenistaNotFoundException(String mensaje) {
         super(mensaje);
     }
