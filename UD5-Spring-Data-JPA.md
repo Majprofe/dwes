@@ -1,4 +1,4 @@
-# UD4: Gestión de Datos con Spring Data JPA
+# UD5: Gestión de Datos con Spring Data JPA
 
 ## Índice
 
@@ -39,28 +39,19 @@
       - 7.1.3. [@ManyToMany](#manytomany)
    - 7.2. [Clave Compuesta con @EmbeddedId](#clave-compuesta-con-embeddedid)
 
-8. [Servicios](#servicios)
-   - 8.1. [Definición de la Capa de Servicio](#definición-de-la-capa-de-servicio)
-   - 8.2. [Implementación de Servicios en Spring Boot](#implementación-de-servicios-en-spring-boot)
-   - 8.3. [Gestión de Transacciones](#gestión-de-transacciones)
-      - 8.3.1. [Importancia de las Transacciones](#importancia-de-las-transacciones)
-      - 8.3.2. [Uso de @Transactional](#uso-de-transactional)
-   - 8.4. [Lanzamiento de Excepciones](#lanzamiento-de-excepciones)
-   - 8.5. [Buenas Prácticas en la Capa de Servicio](#buenas-prácticas-en-la-capa-de-servicio)
+8. [Ejemplo Práctico Ampliado](#ejemplo-práctico-ampliado)
+   - 8.1. [Entidades y Relaciones](#entidades-y-relaciones)
+      - 8.1.1. [Entidad Autor](#entidad-autor)
+      - 8.1.2. [Entidad Editorial](#entidad-editorial)
+      - 8.1.3. [Entidad Libro](#entidad-libro)
+   - 8.2. [Repositorios](#repositorios)
+   - 8.3. [Servicio con Transacciones y Consultas Personalizadas](#servicio-con-transacciones-y-consultas-personalizadas)
+   - 8.4. [Controlador con Método Completado](#controlador-con-método-completado)
+   - 8.5. [Definición de LibroDTO](#definición-de-librodto)
 
-9. [Ejemplo Práctico Ampliado](#ejemplo-práctico-ampliado)
-   - 9.1. [Entidades y Relaciones](#entidades-y-relaciones)
-      - 9.1.1. [Entidad Autor](#entidad-autor)
-      - 9.1.2. [Entidad Editorial](#entidad-editorial)
-      - 9.1.3. [Entidad Libro](#entidad-libro)
-   - 9.2. [Repositorios](#repositorios)
-   - 9.3. [Servicio con Transacciones y Consultas Personalizadas](#servicio-con-transacciones-y-consultas-personalizadas)
-   - 9.4. [Controlador con Método Completado](#controlador-con-método-completado)
-   - 9.5. [Definición de LibroDTO](#definición-de-librodto)
+9. [Ejercicios Propuestos](#ejercicios-propuestos)
 
-10. [Ejercicios Propuestos](#ejercicios-propuestos)
-
-11. [Referencias](#referencias)
+10. [Referencias](#referencias)
 
 
 
@@ -503,116 +494,6 @@ public class Matricula {
 }
 ```
 - `@MapsId`: Enlaza cada una de las claves foráneas con los campos de `MatriculaId`
-
----
-
-## Servicios
-
-### Definición de la Capa de Servicio
-
-La capa de servicio en una aplicación Spring Boot es donde se implementa la lógica de negocio. Actúa como intermediario entre los controladores (que manejan las solicitudes HTTP) y los repositorios (que interactúan con la base de datos).
-
-### Implementación de Servicios en Spring Boot
-
-Para definir un servicio, se utiliza la anotación `@Service`. Esta indica a Spring que la clase es un componente de servicio y permite la inyección de dependencias.
-
-**Ejemplo de un Servicio Simple:**
-
-```java
-@Service
-public class UsuarioService {
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    public Usuario crearUsuario(Usuario usuario) {
-        return usuarioRepository.save(usuario);
-    }
-
-    public Usuario obtenerUsuario(Long id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-    }
-
-    public Usuario actualizarUsuario(Long id, Usuario nuevosDatos) {
-        Usuario usuario = obtenerUsuario(id);
-        usuario.setNombre(nuevosDatos.getNombre());
-        usuario.setEmail(nuevosDatos.getEmail());
-        return usuarioRepository.save(usuario);
-    }
-
-    public void eliminarUsuario(Long id) {
-        usuarioRepository.deleteById(id);
-    }
-}
-```
-### Gestión de Transacciones
-
-Las transacciones garantizan la integridad y consistencia de los datos en operaciones que involucran múltiples cambios en la base de datos.
-
-#### Importancia de las Transacciones
-
-- **Atomicidad:** Todas las operaciones se completan o ninguna lo hace.
-- **Consistencia:** Mantiene la base de datos en un estado coherente.
-- **Aislamiento:** Las transacciones concurrentes no interfieren entre sí.
-- **Durabilidad:** Los cambios persisten incluso en caso de fallos.
-
-#### Uso de `@Transactional`
-
-En Spring, puedes gestionar transacciones mediante la anotación `@Transactional`.
-
-```java
-@Service
-public class PedidoService {
-
-    @Autowired
-    private PedidoRepository pedidoRepository;
-
-    @Autowired
-    private ProductoRepository productoRepository;
-
-    @Transactional
-    public void procesarPedido(Pedido pedido) {
-        pedidoRepository.save(pedido);
-        actualizarStock(pedido.getProductos());
-    }
-
-    private void actualizarStock(List<Producto> productos) {
-        for (Producto producto : productos) {
-            producto.setStock(producto.getStock() - 1);
-            productoRepository.save(producto);
-        }
-    }
-}
-```
-
-### Lanzamiento de Excepciones
-
-Cuando realizamos operaciones sobre una entidad, es posible que el objeto que intentamos modificar no exista en la base de datos. Podemos lanzar una excepción personalizada, como `ResourceNotFoundException`.
-
-```java
-public Usuario obtenerUsuario(Long id) {
-    return usuarioRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-}
-```
-
-```java
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class ResourceNotFoundException extends RuntimeException {
-
-    public ResourceNotFoundException(String mensaje) {
-        super(mensaje);
-    }
-}
-```
-
-### Buenas Prácticas en la Capa de Servicio
-
-- **Separación de Responsabilidades:** Mantén la lógica de negocio en los servicios, no en los controladores o repositorios.
-- **Inyección de Dependencias:** Utiliza constructor o campos con `@Autowired` para inyectar repositorios u otros servicios.
-- **Gestión de Excepciones:** Maneja las excepciones y proporciona mensajes claros.
-- **Transaccionalidad:** Usa `@Transactional` cuando sea necesario para asegurar la consistencia de los datos.
 
 ---
 
