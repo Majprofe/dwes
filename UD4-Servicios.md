@@ -256,7 +256,7 @@ Los mapeadores son clases que se encargan de convertir de un tipo de objeto a ot
 
 ```java
 public class RaquetaMapper {
-    // Aquí iran los metodos para mapear los DTOs a los modelos y viceversa
+
     // Mapeamos de modelo a DTO
     public RaquetaResponseDto toResponse(Raqueta raqueta) {
         return new RaquetaResponseDto(
@@ -266,16 +266,31 @@ public class RaquetaMapper {
                 raqueta.getModelo(),
                 raqueta.getPrecio(),
                 raqueta.getImagen()
-
         );
     }
 
-    // Mapeamos de DTO a modelo
-    public List<RaquetaResponseDto> toResponse(List<Raqueta> raquetas) {
+    public List<RaquetaResponseDto> toResponseList(List<Raqueta> raquetas) {
         return raquetas.stream()
-                .map(this::toResponse)
+                .map(this::toResponse) //LLamamos para cada elemento a la funcion toResponse
                 .toList();
     }
+
+    // Mapeamos de DTO a modelo
+    public Raqueta toModel(RaquetaRequestDto dto) {
+        return new Raqueta(
+                dto.getMarca(),
+                dto.getModelo(),
+                dto.getPrecio(),
+                dto.getImagen()
+        );
+    }
+
+    public List<Raqueta> toModelList(List<RaquetaRequestDto> dtos) {
+        return dtos.stream()
+                .map(this::toModel) //LLamamos para cada elemento a la funcion toModel
+                .toList();
+    }
+}
 ```
 
 ## Validadores
