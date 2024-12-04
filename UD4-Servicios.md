@@ -163,7 +163,6 @@ public class TenistaNotFoundException extends RuntimeException {
 public class TenistaService {
 
     public Tenista findById(Long id) {
-        log.info("findById");
         return tenistaRepository.findById(id).orElseThrow(
                 () -> new TenistaNotFoundException("No se ha encontrado el tenista con id: " + id)
         );
@@ -347,7 +346,6 @@ Ahora si queremos validar los datos de un dto, podemos usar `@Valid` en el pará
 public ResponseEntity<TenistaResponseDto> postTenista(
         @Valid @RequestBody TenistaRequestDto tenista
 ) {
-    log.info("addTenista");
     return ResponseEntity.created(null).body(
             tenistaMapper.toResponse(
                     tenistasService.save(tenistaMapper.toModel(tenista)))
