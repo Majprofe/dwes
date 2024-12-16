@@ -9,10 +9,11 @@ Apuntes del módulo de "Desarrollo Web en Entorno Servidor" de 2º curso del CFG
 - [UD4: Servicios](./UD4-Servicios.md)
 - [UD5: Gestión de datos con Spring Data JPA](./UD5-Spring-Data-JPA.md)
 - [UD6: Swagger](./UD6-Swagger.md)
-- UD7: Seguridad con Spring Security
-- UD8: Gestión de errores y excepciones
-- UD9: Testing
-- UD10: Despliegue y producción
+- [UD7: Almacenamiento en ficheros](./UD7-Ficheros.md)
+- UD8: Testing
+- UD9: WebSockets
+- UD10: Seguridad con Spring Security
+- UD11: Despliegue y producción
 - [Anexo I: Github y Gitflow](./AnexoI-Github.md)
 
 ## Ejercicios
