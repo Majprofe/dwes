@@ -143,7 +143,7 @@ public class FileDownloadController {
 
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType)) //Indica tipo de archivo
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="" + resource.getFilename() + """) //Indicamos que es una descarga
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                     .body(resource); //Incluimos el archivo
         } catch (MalformedURLException | IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
