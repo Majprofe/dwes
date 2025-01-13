@@ -27,7 +27,6 @@
   - [Test de la Autenticación y Autorización](#test-de-la-autenticación-y-autorización)
 - [SSL y TSL](#ssl-y-tsl)
 - [Práctica de clase: Seguridad](#práctica-de-clase-seguridad)
-- [Proyecto del curso](#proyecto-del-curso)
 
 ![](/imagenes/UD8/banner8.png)
 
@@ -805,3 +804,6 @@ public class SSLConfig {
 }
 ```
 
+## Práctica de clase: Seguridad
+
+Vamos a realizar la siguiente práctica guiada para crear una api rest con seguridad: [Certidevs](https://certidevs.com/tutorial-spring-boot-spring-security-jwt-seguridad-api-rest)
