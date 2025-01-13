@@ -58,11 +58,17 @@ Imaginemos que queremos conseguir que:
 
 Lo primero que debemos hacer es añadir las dependencias de Spring Security a nuestro proyecto. 
 
-Usando Gradle
-```kotlin
-implementation("org.springframework.boot:spring-boot-starter-security")
+```java
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
 // Dependencia para test
-testImplementation("org.springframework.security:spring-security-test")
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-test</artifactId>
+    <scope>test</scope>
+</dependency>
 ```
 
 **Desde este momento no podrás acceder a tus endpoints porque se configuran "cerrados" por defecto, por lo que ten paciencia y sigue los pasos que mostramos**
