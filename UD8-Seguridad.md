@@ -812,4 +812,4 @@ public class SSLConfig {
 
 ## Práctica de clase: Seguridad
 
-Vamos a realizar la siguiente práctica guiada para crear una api rest con seguridad: [Certidevs](https://certidevs.com/tutorial-spring-boot-spring-security-jwt-seguridad-api-rest)
+Vamos a realizar la siguiente práctica guiada para crear una api rest básica: [Práctica seguridad 1](./practicas/UD8-Practica1.md)
