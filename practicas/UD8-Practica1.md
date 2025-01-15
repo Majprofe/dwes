@@ -7,19 +7,22 @@
      - **Spring Web**
      - **Spring Security**
      - **Spring Data JPA**
-     - **H2 Database**
+     - **MySQL Database**
 
 2. Descarga y abre el proyecto.
 
 3. Configura el archivo `application.properties`:
    ```properties
-   spring.datasource.url=jdbc:h2:mem:testdb
-   spring.datasource.driver-class-name=org.h2.Driver
-   spring.datasource.username=sa
-   spring.datasource.password=password
-   spring.h2.console.enabled=true
-   spring.jpa.hibernate.ddl-auto=update
-   spring.jpa.show-sql=true
+spring.datasource.url=jdbc:mysql://localhost:3306/testdb
+spring.datasource.username=prueba
+spring.datasource.password=prueba
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# Si quieres que Spring cree/actualice las tablas automáticamente
+spring.jpa.hibernate.ddl-auto=update
+
+# Mostrar las sentencias SQL en el log
+spring.jpa.show-sql=true
    ```
 
 ---
