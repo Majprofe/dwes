@@ -178,11 +178,18 @@ Crea un controlador para manejar el registro y login de usuarios:
 ```java
 package com.ejemplo.seguridad.controllers;
 
-import com.ejemplo.seguridad.models.RegistroRequest;
-import com.ejemplo.seguridad.services.AuthService;
+import es.iesjandula.security1.dto.RegistroRequest;
+import es.iesjandula.security1.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -191,6 +198,9 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     @PostMapping("/register")
     public ResponseEntity<String> registrar(@RequestBody RegistroRequest request) {
         authService.registrarUsuario(request.getUsername(), request.getEmail(), request.getPassword());
@@ -198,8 +208,18 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login() {
-        return ResponseEntity.ok("Login exitoso");
+    public ResponseEntity<String> login(@RequestBody RegistroRequest request) {
+        try {
+            // Intenta autenticar al usuario
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+            );
+
+            // Si la autenticación es exitosa, puedes devolver un token JWT (opcional)
+            return ResponseEntity.ok("Login exitoso");
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(401).body("Usuario o contraseña incorrectos");
+        }
     }
 }
 ```
@@ -214,6 +234,8 @@ package com.ejemplo.seguridad.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -238,6 +260,11 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .httpBasic();
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
     }
 }
 ```
