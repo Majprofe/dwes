@@ -97,6 +97,12 @@ Para utilizar Spring Data JPA, es necesario incluir las siguientes dependencias 
         <artifactId>h2</artifactId>
         <scope>runtime</scope>
     </dependency>
+    <!-- Usando MySQL en este ejemplo -->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>8.0.32</version> <!-- Ajusta la versión que requieras -->
+    </dependency>
 </dependencies>
 ```
 
