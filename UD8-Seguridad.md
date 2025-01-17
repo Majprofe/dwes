@@ -1,3 +1,7 @@
+
+markdown
+Copiar
+Editar
 # UD8: Seguridad con Spring Security
 
 ## Índice
@@ -13,7 +17,7 @@
   - [Repositorio de Usuario](#repositorio-de-usuario)
   - [Servicio de Usuario](#servicio-de-usuario)
   - [Servicio para JWT](#servicio-para-jwt)
-  - [Servicio de Autenticción](#servicio-de-autenticción)
+  - [Servicio de Autenticación](#servicio-de-autenticación)
   - [Filtro de autenticación JWT](#filtro-de-autenticación-jwt)
     - [Tipos de filtro](#tipos-de-filtro)
   - [Configuración de la seguridad](#configuración-de-la-seguridad)
@@ -26,7 +30,17 @@
     - [AuthenticationPrincipal](#authenticationprincipal)
   - [Test de la Autenticación y Autorización](#test-de-la-autenticación-y-autorización)
 - [SSL y TSL](#ssl-y-tsl)
+- [Firebase](#firebase)
+  - [Configuración previa en Firebase](#1-configuración-previa-en-firebase)
+  - [Dependencias en tu proyecto Spring Boot](#2-dependencias-en-tu-proyecto-spring-boot)
+  - [Inicializar el SDK de Firebase](#3-inicializar-el-sdk-de-firebase)
+  - [Crear un filtro de autenticación personalizado](#4-crear-un-filtro-de-autenticación-personalizado)
+  - [Configuración de seguridad](#5-configuración-de-seguridad)
+  - [Flujo de autenticación resumido](#6-flujo-de-autenticación-resumido)
+  - [Manejo de roles](#7-manejo-de-roles)
 - [Práctica de clase: Seguridad](#práctica-de-clase-seguridad)
+
+---
 
 ![](/imagenes/UD8/banner8.png)
 
@@ -810,6 +824,264 @@ public class SSLConfig {
 }
 ```
 
+## Firebase
+
+cómo integrar **Spring Security** con **Firebase** en un proyecto **Spring Boot** para autenticar a los usuarios mediante los **ID Tokens** emitidos por Firebase.
+
+---
+
+### 1. Configuración previa en Firebase
+
+1. **Crear o usar un proyecto de Firebase**  
+   - Ingresa a la [Consola de Firebase](https://console.firebase.google.com/).  
+   - Crea un nuevo proyecto o selecciona uno existente.
+
+2. **Habilitar la autenticación**  
+   - En la sección “Authentication” de la consola de Firebase, configura el/los método(s) de autenticación que desees usar (correo y contraseña, Google, Facebook, etc.).
+
+3. **Obtener las credenciales del servicio (Service Account)**  
+   - Ve a la sección de “Configuración del proyecto” \> “Cuentas de servicio” en la consola de Firebase.  
+   - Crea una nueva clave privada (JSON) y guárdala en tu proyecto.
+
+Estas credenciales permitirán a tu aplicación validar los tokens que emite Firebase.
+
+---
+
+### 2. Dependencias en tu proyecto Spring Boot
+
+Agrega en tu archivo de dependencias (`pom.xml` o `build.gradle`) los componentes necesarios:
+
+### Ejemplo para `pom.xml`:
+
+```xml
+<dependencies>
+    <!-- Otras dependencias del proyecto -->
+    
+    <!-- Spring Security -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    
+    <!-- Firebase Admin SDK -->
+    <dependency>
+        <groupId>com.google.firebase</groupId>
+        <artifactId>firebase-admin</artifactId>
+        <version>9.1.1</version> <!-- Verifica la versión más reciente -->
+    </dependency>
+    
+    <!-- Otras dependencias necesarias -->
+</dependencies>
+```
+
+---
+
+### 3. Inicializar el SDK de Firebase en tu aplicación
+
+Necesitas inicializar el **Firebase Admin SDK** con las credenciales que descargaste de Firebase. Crea una clase de configuración (por ejemplo, `FirebaseConfig.java`):
+
+```java
+package com.example.demo.config;
+
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+@Configuration
+public class FirebaseConfig {
+
+    @Bean
+    public FirebaseApp firebaseApp() throws IOException {
+        // Carga tu archivo JSON de credenciales
+        // (p. ej. desde src/main/resources).
+        try (InputStream serviceAccount = 
+                getClass().getResourceAsStream("/firebase-service-account.json")) {
+
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build();
+
+            // Si no existe ninguna instancia previa, la inicializamos
+            if (FirebaseApp.getApps().isEmpty()) {
+                return FirebaseApp.initializeApp(options);
+            } else {
+                return FirebaseApp.getInstance();
+            }
+        }
+    }
+}
+```
+
+> **Nota**: Asegúrate de colocar tu archivo `firebase-service-account.json` en `src/main/resources` (o en una ruta segura). También podrías cargar las credenciales desde variables de entorno.
+
+---
+
+### 4. Validar tokens de Firebase con Spring Security
+
+Para que Spring Security utilice los tokens de Firebase, crearemos un **filtro** que intercepte las peticiones HTTP y valide el **ID Token** recibido desde el header `Authorization`.
+
+#### 4.1 Crear un filtro de autenticación personalizado
+
+Crea la clase `FirebaseAuthenticationFilter`:
+
+```java
+package com.example.demo.security;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+                                    throws ServletException, IOException {
+
+        String authorizationHeader = request.getHeader("Authorization");
+
+        // Esperamos un header con el formato: "Bearer <token>"
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String token = authorizationHeader.substring(7);
+
+            try {
+                // Validamos el token con Firebase
+                FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
+
+                // Construimos la autenticación para Spring Security
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                decodedToken.getUid(), // principal
+                                null,                 // credentials
+                                null                  // authorities (se pueden mapear roles si es necesario)
+                        );
+
+                // Guardamos la autenticación en el contexto de Spring
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (Exception e) {
+                // Token inválido o expirado
+                logger.error("Error validando token de Firebase: ", e);
+            }
+        }
+
+        // Continuamos con el siguiente filtro
+        filterChain.doFilter(request, response);
+    }
+}
+```
+
+#### 4.2 Incluir el filtro en la configuración de Spring Security
+
+Edita tu clase de configuración de Spring Security (por ejemplo, `SecurityConfig.java`):
+
+```java
+package com.example.demo.config;
+
+import com.example.demo.security.FirebaseAuthenticationFilter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+public class SecurityConfig {
+
+    // Si necesitas un AuthenticationManager
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable()) // Desactiva CSRF según tus necesidades
+            .authorizeHttpRequests(auth -> {
+                auth
+                    .requestMatchers("/public/**").permitAll() // Ejemplo de endpoint público
+                    .anyRequest().authenticated();             // El resto requiere autenticación
+            })
+            .addFilterBefore(new FirebaseAuthenticationFilter(),
+                             org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+            .httpBasic(Customizer.withDefaults());
+
+        return http.build();
+    }
+}
+```
+
+- `addFilterBefore(new FirebaseAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)` inserta nuestro filtro personalizado **antes** del filtro estándar de autenticación de Spring.
+
+---
+
+### 5. Manejo de roles y claims (opcional)
+
+Si requieres roles o permisos específicos:
+
+1. Asigna **claims personalizados** a tus usuarios desde la consola de Firebase o mediante el SDK de Firebase en tu backend (ejemplo: `admin: true`).  
+2. En el filtro `FirebaseAuthenticationFilter`, mapea dichos claims a **GrantedAuthority** para construir la lista de roles.
+
+Por ejemplo:
+
+```java
+Collection<GrantedAuthority> authorities = new ArrayList<>();
+if (decodedToken.getClaims().containsKey("admin") &&
+    (Boolean) decodedToken.getClaims().get("admin")) {
+    authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+}
+
+UsernamePasswordAuthenticationToken authentication =
+    new UsernamePasswordAuthenticationToken(
+            decodedToken.getUid(),
+            null,
+            authorities
+    );
+```
+
+---
+
+### 6. Flujo de autenticación resumido
+
+1. El **cliente** (tu frontend en Angular, React, etc.) obtiene un **ID Token** de Firebase al iniciar sesión.  
+2. El **ID Token** se envía en el header `Authorization` con formato `Bearer <token>` al backend.  
+3. Tu **filtro `FirebaseAuthenticationFilter`**:  
+   - Extrae el token del header.  
+   - Lo verifica con `FirebaseAuth.getInstance().verifyIdToken(token)`.  
+   - Si es válido, crea un `UsernamePasswordAuthenticationToken` y lo asigna al `SecurityContextHolder`.  
+   - Continúa con el siguiente filtro.  
+4. **Spring Security** revisa el contexto de seguridad para decidir si la petición está autenticada y, en su caso, autorizada.
+
+---
+
+### 7. Conclusión
+
+La integración de **Spring Security** con **Firebase** se realiza siguiendo estos pasos esenciales:
+
+1. **Inicializar** el **Firebase Admin SDK** con tu archivo de credenciales.  
+2. **Crear** un **filtro personalizado** para verificar los tokens de Firebase en cada solicitud.  
+3. **Configurar** el filtro en la cadena de filtros de Spring Security.  
+
+De esta forma, delegas en Firebase la gestión de usuarios, login, registro y recuperación de credenciales, mientras que tu backend de Spring Boot controla el acceso a los endpoints de manera robusta y segura.
+
 ## Práctica de clase: Seguridad
 
-Vamos a realizar la siguiente práctica guiada para crear una api rest básica: [Práctica seguridad 1](./practicas/UD8-Practica1.md)
+1. Práctica guiada para crear una api rest básica: [Práctica seguridad 1](./practicas/UD8-Practica1.md)
+2. Práctica para crear spring security con validación en firebase: [Práctica seguridad 2](./practicas/UD8-Firebase.md)
