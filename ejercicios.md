@@ -3,3 +3,4 @@
 1. [Gestión de eventos deportivos](./ejercicios/1-gestion-eventos-deportivos.md)
 2. [Gestión de productos y pedidos](./ejercicios/2-gestion-productos.md)
 3. [Repaso de servicios](./ejercicios/3-repaso-servicios.md)
+4. [Firebase - Spring Security](./ejercicios/8-autentificacion-firebase.md)
