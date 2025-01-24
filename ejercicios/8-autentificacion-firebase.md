@@ -52,7 +52,7 @@ Crearás una API REST para una aplicación de gestión de tareas, donde:
    - Spring Security.
    - Spring Web.
    - Firebase Admin SDK.
-   - H2 Database (opcional para almacenar tareas).
+   - MySQL (para almacenar las tareas).
 
 2. **Configuración de Firebase**:
    - Implementar la inicialización de Firebase en una clase de configuración.
