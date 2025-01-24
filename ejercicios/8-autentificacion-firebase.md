@@ -87,3 +87,44 @@ Se evaluará:
 ## Recomendaciones
 - Usa Postman para probar la API antes de crear un cliente frontend.
 - Si implementas un frontend, utiliza Firebase SDK para gestionar el inicio de sesión y enviar el token en cada petición al backend.
+
+---
+
+# Rúbrica de Evaluación: Práctica de Autenticación y Autorización con Firebase y Spring Boot
+
+## Criterios de Evaluación
+
+### 1. **Configuración del Proyecto Firebase** (20 puntos)
+| Indicador                                      | Puntos |
+|-----------------------------------------------|--------|
+| Se ha creado correctamente el proyecto en Firebase y habilitado un método de autenticación. | 5      |
+| El archivo `serviceAccountKey.json` está configurado correctamente en Spring Boot. | 5      |
+| Se ha implementado la inicialización de Firebase en el backend.             | 10     |
+
+### 2. **Implementación del Backend con Spring Boot** (40 puntos)
+| Indicador                                      | Puntos |
+|-----------------------------------------------|--------|
+| El filtro de autenticación para validar tokens de Firebase está correctamente implementado. | 15     |
+| Los endpoints están implementados y funcionan según lo especificado:       |        |
+| - `POST /tasks`: Crear tareas (autenticación requerida).                | 10     |
+| - `GET /tasks`: Obtener todas las tareas (solo admin).                  | 10     |
+| - `GET /tasks/user`: Obtener las tareas propias del usuario autenticado. | 5      |
+
+### 3. **Gestor de Roles** (15 puntos)
+| Indicador                                      | Puntos |
+|-----------------------------------------------|--------|
+| Los usuarios tienen roles definidos (“user” y “admin”).              | 5      |
+| Los roles están correctamente utilizados para autorizar rutas y acciones.   | 10     |
+
+### 4. **Frontend** (20 puntos)
+| Indicador                                      | Puntos |
+|-----------------------------------------------|--------|
+| Se ha creado un formulario de registro e inicio de sesión funcional con Firebase. | 10     |
+| El frontend consume correctamente los endpoints del backend.             | 10     |
+
+### 5. **Documentación** (5 puntos)
+| Indicador                                      | Puntos |
+|-----------------------------------------------|--------|
+| La API está documentada con Swagger o Postman, incluyendo ejemplos de peticiones. | 5      |
+
+---
