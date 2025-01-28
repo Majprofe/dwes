@@ -505,7 +505,153 @@ Se les proporciona una clase `CalculadoraService` con métodos básicos (suma, r
 
 ---
 
-## **Práctica 2: Pruebas de integración con H2**
+## Práctica 2: Pruebas unitarias con Mockito
+
+**Objetivo**: Aprender a utilizar Mockito para escribir pruebas unitarias, simulando dependencias y verificando interacciones entre un servicio y un repositorio.
+
+---
+
+### Descripción:
+Se proporciona una entidad `Cliente`, un repositorio `ClienteRepository` y un servicio `ClienteService`. Debes usar Mockito para:
+1. Simular el comportamiento del repositorio.
+2. Probar los métodos del servicio.
+3. Verificar que las interacciones entre el servicio y el repositorio se realizan correctamente.
+
+---
+
+### Entidad: Cliente
+```java
+@Entity
+public class Cliente {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nombre;
+    private String email;
+
+    // Getters y setters
+}
+```
+
+---
+
+### Repositorio: ClienteRepository
+```java
+public interface ClienteRepository extends JpaRepository<Cliente, Long> {
+    Optional<Cliente> findByEmail(String email);
+}
+```
+
+---
+
+### Servicio: ClienteService
+```java
+@Service
+public class ClienteService {
+
+    private final ClienteRepository clienteRepository;
+
+    public ClienteService(ClienteRepository clienteRepository) {
+        this.clienteRepository = clienteRepository;
+    }
+
+    public Cliente guardarCliente(Cliente cliente) {
+        return clienteRepository.save(cliente);
+    }
+
+    public Optional<Cliente> buscarClientePorEmail(String email) {
+        return clienteRepository.findByEmail(email);
+    }
+
+    public void eliminarCliente(Long id) {
+        clienteRepository.deleteById(id);
+    }
+}
+```
+
+---
+
+### Tarea:
+Escribir pruebas unitarias para `ClienteService` utilizando **Mockito**.
+
+1. **Configurar las pruebas**:
+   - Usa las anotaciones `@ExtendWith(MockitoExtension.class)` y `@Mock` para inyectar un mock de `ClienteRepository`.
+   - Usa `@InjectMocks` para crear una instancia de `ClienteService`.
+
+2. **Escribir pruebas para los métodos del servicio**:
+   - **Guardar un cliente**:
+     - Simular que el método `save` del repositorio guarda un cliente y devolver un cliente ficticio.
+     - Verificar que el repositorio fue llamado con el cliente correcto.
+   - **Buscar un cliente por email**:
+     - Simular que el método `findByEmail` del repositorio devuelve un cliente ficticio.
+     - Verificar que el resultado del servicio coincide con el cliente esperado.
+   - **Eliminar un cliente**:
+     - Simular la eliminación de un cliente por su ID.
+     - Verificar que el método `deleteById` fue llamado con el ID correcto.
+
+---
+
+### Ejemplo de clase de prueba con Mockito:
+```java
+@ExtendWith(MockitoExtension.class)
+class ClienteServiceTest {
+
+    @Mock
+    private ClienteRepository clienteRepository;
+
+    @InjectMocks
+    private ClienteService clienteService;
+
+    @Test
+    void testGuardarCliente() {
+        Cliente cliente = new Cliente();
+        cliente.setNombre("Juan");
+        cliente.setEmail("juan@example.com");
+
+        when(clienteRepository.save(any(Cliente.class))).thenReturn(cliente);
+
+        Cliente guardado = clienteService.guardarCliente(cliente);
+
+        assertNotNull(guardado);
+        assertEquals("Juan", guardado.getNombre());
+        verify(clienteRepository).save(cliente); // Verificar interacción con el mock
+    }
+
+    @Test
+    void testBuscarClientePorEmail() {
+        Cliente cliente = new Cliente();
+        cliente.setNombre("Ana");
+        cliente.setEmail("ana@example.com");
+
+        when(clienteRepository.findByEmail("ana@example.com")).thenReturn(Optional.of(cliente));
+
+        Optional<Cliente> encontrado = clienteService.buscarClientePorEmail("ana@example.com");
+
+        assertTrue(encontrado.isPresent());
+        assertEquals("Ana", encontrado.get().getNombre());
+        verify(clienteRepository).findByEmail("ana@example.com");
+    }
+
+    @Test
+    void testEliminarCliente() {
+        Long clienteId = 1L;
+
+        doNothing().when(clienteRepository).deleteById(clienteId);
+
+        clienteService.eliminarCliente(clienteId);
+
+        verify(clienteRepository).deleteById(clienteId); // Verificar que se llamó al método
+    }
+}
+```
+
+### Entregables:
+1. Clase de pruebas completa para `ClienteService` usando Mockito.
+
+---
+
+## **Práctica 3: Pruebas de integración con H2**
 **Objetivo:** Probar la integración de un repositorio con una base de datos en memoria H2.
 
 ### **Descripción:**
@@ -561,7 +707,7 @@ Se les proporciona una entidad `Producto` y un repositorio `ProductoRepository`.
 
 ---
 
-## **Práctica 3: Test de controladores con MockMvc**
+## **Práctica 4: Test de controladores con MockMvc**
 **Objetivo:** Probar los endpoints de un controlador usando MockMvc.
 
 ### **Descripción:**
