@@ -27,55 +27,62 @@ Para realizar los test unitarios con Spring Boot podemos utilizar [JUnit 5](http
 </dependency>
 ```
 
+Agregar Mockito:
+```xml
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <version>5.5.0</version> <!-- Sustituye por la versión más reciente -->
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-junit-jupiter</artifactId>
+    <version>5.5.0</version>
+    <scope>test</scope>
+</dependency>
+```
+
 Para realizar los test unitarios en clases que no dependan de otras, no necesitamos realizar mocks. Podremos usar JUnit 5 para realizar los test. Por ejemplo de un repositorio o mapeador o servicio sin dependencias.
 
 Es importante que los test sean independientes, es decir, que no dependan unos de otros. Para ello debemos asegurarnos que cada test se encarga de inicializar los datos que necesita para funcionar. Para ello podemos utilizar los métodos `@BeforeEach` y `@AfterEach` que se ejecutan antes y después de cada test. También podemos utilizar los métodos `@BeforeAll` y `@AfterAll` que se ejecutan antes y después de todos los test de la clase.
 
 Además, usaremos las aserciones de JUnit 5 para comprobar que el resultado de la ejecución de nuestro código es el esperado. Por ejemplo:
+
+Clase a testear:
 ```java
-class RaquetasRepositoryImplTest {
-    RaquetasRepository repository = new RaquetasRepositoryImpl();
-
-    @BeforeEach
-    void setUp() {
-        // Inicializamos las el repositorio
-        repository = new RaquetasRepositoryImpl();
-
+public class ConversorTemperatura {
+    public double convertirCelsiusAFahrenheit(double celsius) {
+        return (celsius * 9 / 5) + 32;
     }
 
-
-    @Test
-    void findAll() {
-        var raquetas = repository.findAll();
-
-        assertAll(
-                () -> assertNotNull(raquetas),
-                () -> assertEquals(3, raquetas.size())
-        );
-    }
-
-    @Test
-    void findById() {
-        var raqueta = repository.findById(1L);
-
-        assertAll(
-                () -> assertNotNull(raqueta),
-                () -> assertEquals("Babolat", raqueta.get().getMarca()),
-                () -> assertEquals("Pure Aero", raqueta.get().getModelo()),
-                () -> assertEquals(199.95, raqueta.get().getPrecio())
-        );
-    }
-
-    @Test
-    void findByIdNotFound() {
-        var raqueta = repository.findById(100L);
-
-        assertAll(
-                () -> assertNotNull(raqueta),
-                () -> assertFalse(raqueta.isPresent())
-        );
+    public double convertirFahrenheitACelsius(double fahrenheit) {
+        return (fahrenheit - 32) * 5 / 9;
     }
 }
+```
+
+Test unitario:
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class ConversorTemperaturaTest {
+    private final ConversorTemperatura conversor = new ConversorTemperatura();
+
+    @Test
+    void testConvertirCelsiusAFahrenheit() {
+        double resultado = conversor.convertirCelsiusAFahrenheit(0);
+        assertEquals(32, resultado, "0°C debería ser 32°F");
+    }
+
+    @Test
+    void testConvertirFahrenheitACelsius() {
+        double resultado = conversor.convertirFahrenheitACelsius(32);
+        assertEquals(0, resultado, "32°F debería ser 0°C");
+    }
+}
+
 ```
 
 Si estamos testeando controladores o servicios, es posible que necesitemos realizar mocks de las dependencias que tienen. Para ello podemos utilizar Mockito.
@@ -86,84 +93,80 @@ De esta manera cada vez que se use un método de la clase mockeada, se ejecutar�
 
 Para simular el comportamiento de los mocks, podemos utilizar el método `when` de Mockito. Para verificar que se ha llamado a un método de un mock, podemos utilizar el método `verify` de Mockito.
 
-
+Servicio a probar:
 ```java
-@ExtendWith(MockitoExtension.class) // Extensión de Mockito para usarlo
-class RaquetasServiceImplTest {
-    // Datos de demo
-    Map<Long, Raqueta> raquetas = RaquetasFactory.getRaquetasDemoData();
-    // Creo los mocks
+@Service
+public class ProductoService {
+
+    private final ProductoRepository productoRepository;
+
+    public ProductoService(ProductoRepository productoRepository) {
+        this.productoRepository = productoRepository;
+    }
+
+    public Producto guardarProducto(Producto producto) {
+        return productoRepository.save(producto);
+    }
+
+    public Optional<Producto> buscarProductoPorNombre(String nombre) {
+        return productoRepository.findByNombre(nombre);
+    }
+
+    public void eliminarProducto(Long id) {
+        productoRepository.deleteById(id);
+    }
+}
+```
+Test con Mockito:
+```java
+@ExtendWith(MockitoExtension.class)
+class ProductoServiceTest {
+
     @Mock
-    private RaquetaValidator raquetaValidator;
-    @Mock
-    private RaquetasRepositoryImpl raquetasRepository;
-    // Inyecto los mocks en la clase que voy a testear
-    @InjectMocks 
-    private RaquetasServiceImpl raquetasService;
+    private ProductoRepository productoRepository;
 
-    @BeforeEach
-    void setUp() {
-        raquetas = RaquetasFactory.getRaquetasDemoData();
-    }
-
+    @InjectMocks
+    private ProductoService productoService;
 
     @Test
-    void findAll() {
-        // Lo que vamos a simular
-        when(raquetasRepository.findAll())
-                .thenReturn(List.copyOf(raquetas.values()));
+    void testGuardarProducto() {
+        Producto producto = new Producto();
+        producto.setNombre("Manzana");
+        producto.setPrecio(1.50);
 
-        //test
-        var list = raquetasService.findAll();
+        when(productoRepository.save(any(Producto.class))).thenReturn(producto);
 
-        // comprobaciones
-        assertAll(
-                () -> assertNotNull(list),
-                () -> assertEquals(3, list.size())
-        );
+        Producto guardado = productoService.guardarProducto(producto);
 
-        // verificamos que se ha llamado al método
-        verify(raquetasRepository, times(1))
-                .findAll();
+        assertNotNull(guardado);
+        assertEquals("Manzana", guardado.getNombre());
+        verify(productoRepository).save(producto); // Verificamos que se llamó al repositorio
     }
 
     @Test
-    void findById() {
-        // Lo que vamos a simular
-        when(raquetasRepository.findById(1L))
-                .thenReturn(Optional.of(raquetas.get(1L)));
+    void testBuscarProductoPorNombre() {
+        Producto producto = new Producto();
+        producto.setNombre("Manzana");
+        producto.setPrecio(1.50);
 
-        // Test
-        var raqueta = raquetasService.findById(1L);
+        when(productoRepository.findByNombre("Manzana")).thenReturn(Optional.of(producto));
 
-        // Comprobaciones
-        assertAll(
-                () -> assertNotNull(raqueta),
-                () -> assertEquals("Babolat", raqueta.getMarca()),
-                () -> assertEquals("Pure Aero", raqueta.getModelo()),
-                () -> assertEquals(199.95, raqueta.getPrecio())
-        );
+        Optional<Producto> encontrado = productoService.buscarProductoPorNombre("Manzana");
 
-        // Verificamos que se ha llamado al método
-        verify(raquetasRepository, times(1))
-                .findById(1L);
+        assertTrue(encontrado.isPresent());
+        assertEquals("Manzana", encontrado.get().getNombre());
+        verify(productoRepository).findByNombre("Manzana"); // Verificamos que se llamó al método
     }
 
     @Test
-    void findByIdNotFound() {
-        when(raquetasRepository.findById(-100L))
-                .thenReturn(Optional.empty());
+    void testEliminarProducto() {
+        Long productoId = 1L;
 
-        // Salta la excepcion
-        var res = assertThrows(ResponseStatusException.class, () -> {
-            raquetasService.findById(-100L);
-        });
-        // Comprobamos que la excepción es la esperada
-        assert (res.getMessage().contains("No se ha encontrado la raqueta con id: -100"));
+        doNothing().when(productoRepository).deleteById(productoId);
 
-        // Verificamos que se ha llamado al método
-        verify(raquetasRepository, times(1))
-                .findById(-100L);
+        productoService.eliminarProducto(productoId);
+
+        verify(productoRepository).deleteById(productoId); // Verificamos que se llamó al repositorio
     }
 }
 ```
@@ -171,40 +174,42 @@ class RaquetasServiceImplTest {
 ## Test de integración
 Para hacer los test de integration podemos usar solo JUnit con las clases con sus respectivas dependencias reales. Sin embargo, si queremos hacer los test de integración usando el contexto Spring Boot, debemos usar la anotación `@SpringBootTest` en la clase de test. De esta manera Spring Boot se encargará de inicializar el contexto de la aplicación y de inyectar las dependencias que necesitemos con `@Autowired`.
 
+Entidad:
+```java
+@Entity
+public class Usuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nombre;
+    private String email;
+}
+```
+Repositorio:
+```java
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+    Optional<Usuario> findByEmail(String email);
+}
+```
+Test de integración:
 ```java
 @SpringBootTest
-class RaquetasControllerTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY) // Usar H2
+class UsuarioRepositoryTest {
     @Autowired
-    private RaquetasController controller;
+    private UsuarioRepository usuarioRepository;
 
     @Test
-    void findAll() {
-        var list = controller.findAll();
+    void testGuardarYBuscarUsuario() {
+        Usuario usuario = new Usuario();
+        usuario.setNombre("María");
+        usuario.setEmail("maria@example.com");
 
-        assertAll(
-                () -> assertNotNull(list),
-                () -> assertEquals(3, list.size())
-        );
-    }
+        Usuario guardado = usuarioRepository.save(usuario);
+        Optional<Usuario> encontrado = usuarioRepository.findByEmail("maria@example.com");
 
-    @Test
-    void findById() {
-        var raqueta = controller.findById(1L);
-
-        assertAll(
-                () -> assertNotNull(raqueta),
-                () -> assertEquals("Babolat", raqueta.getMarca()),
-                () -> assertEquals("Pure Aero", raqueta.getModelo()),
-                () -> assertEquals(199.95, raqueta.getPrecio())
-        );
-    }
-
-    @Test
-    void findByIdNotFound() {
-        var res = assertThrows(ResponseStatusException.class, () -> {
-            controller.findById(-100L);
-        });
-        assert (res.getMessage().contains("No se ha encontrado la raqueta con id: -100"));
+        assertTrue(encontrado.isPresent());
+        assertEquals("María", encontrado.get().getNombre());
     }
 }
 ```
@@ -214,80 +219,50 @@ Aunque podemos testear los controladores como una clase más, mockeando o integr
 
 Para ello debemos usar la anotación `@AutoConfigureMockMvc` en la clase de test. De esta manera Spring Boot se encargará de inicializar el contexto de la aplicación y de inyectar las dependencias que necesitemos. Además, nos proporciona un objeto `MockMvc` que nos permite [simular las peticiones HTTP](https://docs.spring.io/spring-framework/reference/testing/spring-mvc-test-framework.html) y con ello testear la [capa HTTP](https://spring.io/guides/gs/testing-web/) o realizar un test de [integración completo ](https://www.baeldung.com/integration-testing-in-spring)si no usamos los mocks . Usaremos ObjectMapper para mapear los objetos a JSON y poder testear los controladores.
 
-
+Controlador:
 ```java
-// Indicamos que es un test de Spring
-@SpringBootTest
-// Configuramos el cliente MVC
-@AutoConfigureMockMvc
-public class RaquetasControllerMvcIntegrationTest {
-    // Para mapear a JSON
-    private final ObjectMapper mapper = new ObjectMapper();
+@RestController
+@RequestMapping("/api/usuarios")
+public class UsuarioController {
     @Autowired
-    MockMvc mockMvc; // Cliente MVC
+    private UsuarioRepository usuarioRepository;
 
-    Raqueta raqueta = RaquetasFactory.getRaquetasDemoData().get(1L);
-    String myEndpoint = "/api/raquetas";
+    @PostMapping
+    public Usuario create(@RequestBody Usuario usuario) {
+        return usuarioRepository.save(usuario);
+    }
+
+    @GetMapping("/{id}")
+    public Usuario findById(@PathVariable Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+    }
+}
+```
+Test del controlador:
+```java
+@SpringBootTest
+@AutoConfigureMockMvc
+class UsuarioControllerTest {
+    @Autowired
+    private MockMvc mockMvc;
 
     @Test
-    @Order(1)
-    void findAllTest() throws Exception {
+    void testCrearUsuario() throws Exception {
+        String nuevoUsuario = "{ \"nombre\": \"Juan\", \"email\": \"juan@example.com\" }";
 
-        // Consulto el endpoint
-        MockHttpServletResponse response = mockMvc.perform(
-                        get(myEndpoint)
-                                .accept(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-
-        // Proceso la respuesta
-        ObjectMapper mapper = new ObjectMapper();
-        List<RaquetaResponseDto> res = mapper.readValue(response.getContentAsString(),
-                mapper.getTypeFactory().constructCollectionType(List.class, RaquetaResponseDto.class));
-
-        assertAll(
-                () -> assertEquals(response.getStatus(), HttpStatus.OK.value()),
-                () -> assertTrue(response.getContentAsString().contains("\"id\":" + raqueta.getId())),
-                () -> assertTrue(res.size() > 0),
-                () -> assertTrue(res.stream().anyMatch(r -> r.getId().equals(raqueta.getId())))
-        );
+        mockMvc.perform(post("/api/usuarios")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(nuevoUsuario))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nombre").value("Juan"))
+                .andExpect(jsonPath("$.email").value("juan@example.com"));
     }
 
     @Test
-    @Order(2)
-    void findByIdTest() throws Exception {
-        // Consulto el endpoint
-        MockHttpServletResponse response = mockMvc.perform(
-                        get(myEndpoint + "/" + raqueta.getId())
-                                .accept(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-
-        // Proceso la respuesta
-        RaquetaResponseDto res = mapper.readValue(response.getContentAsString(), RaquetaResponseDto.class);
-
-        assertAll(
-                () -> assertEquals(response.getStatus(), HttpStatus.OK.value()),
-                () -> assertEquals(res.getId(), raqueta.getId())
-        );
-    }
-
-    @Test
-    @Order(3)
-    void findByIdNotFound() throws Exception {
-        // Consulto el endpoint
-        MockHttpServletResponse response = mockMvc.perform(
-                        get(myEndpoint + "/" + -1000L)
-                                .accept(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-
-        // Proceso la respuesta
-        try {
-            RaquetaResponseDto res = mapper.readValue(response.getContentAsString(), RaquetaResponseDto.class);
-        } catch (Exception ignored) {
-        }
-
-        assertAll(
-                () -> assertEquals(response.getStatus(), HttpStatus.NOT_FOUND.value())
-        );
+    void testUsuarioNoEncontrado() throws Exception {
+        mockMvc.perform(get("/api/usuarios/999"))
+                .andExpect(status().isNotFound());
     }
 }
 ```
@@ -295,165 +270,81 @@ public class RaquetasControllerMvcIntegrationTest {
 De la misma manera que en apartado anterior, podemos mockear las dependencias de los controladores para que no se conecten a la base de datos o servicios y ser solo unitario. Para ello debemos usar la anotación `@MockBean` en la clase de test. De esta manera Spring Boot se encargará de inicializar el contexto de la aplicación y de inyectar las dependencias que necesitemos. 
 
 
+Servicio:
 ```java
-/ Indicamos que es un test de Spring
-@SpringBootTest
-@AutoConfigureMockMvc
-@ExtendWith(MockitoExtension.class) // Extensión de Mockito para usarlo
-public class RaquetasControllerMvcMockTest {
-    // Para mapear a JSON
-    private final ObjectMapper mapper = new ObjectMapper();
-    @MockBean
-    RaquetasServiceImpl raquetasService;
-    @MockBean
-    RaquetaMapper raquetaMapper;
-    @Autowired
-    MockMvc mockMvc; // Cliente MVC
-    Raqueta raqueta = RaquetasFactory.getRaquetasDemoData().get(1L);
-    RaquetaResponseDto raquetaResponseDto = new RaquetaResponseDto(
-            raqueta.getId(),
-            raqueta.getUuid(),
-            raqueta.getMarca(),
-            raqueta.getModelo(),
-            raqueta.getPrecio(),
-            raqueta.getImagen()
-    );
-    RaquetaRequestDto raquetaRequestDto = new RaquetaRequestDto(
-            raqueta.getMarca(),
-            raqueta.getModelo(),
-            raqueta.getPrecio(),
-            raqueta.getImagen()
-    );
-    String myEndpoint = "/api/raquetas";
+@Service
+public class PedidoService {
 
-    @Autowired
-    public RaquetasControllerMvcMockTest(RaquetasServiceImpl raquetasService, RaquetaMapper raquetaMapper) {
-        this.raquetasService = raquetasService;
-        this.raquetaMapper = raquetaMapper;
-    }
-
-    @Test
-    void findAllTest() throws Exception {
-        // Lo que voy a simular
-        // Lo que vamos a simular
-        when(raquetasService.findAll())
-                .thenReturn(List.of(raqueta));
-        when(raquetaMapper.toResponse(List.of(raqueta)))
-                .thenReturn(List.of(raquetaResponseDto));
-
-        // Consulto el endpoint
-        MockHttpServletResponse response = mockMvc.perform(
-                        get(myEndpoint)
-                                .accept(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-
-        // Proceso la respuesta
-        ObjectMapper mapper = new ObjectMapper();
-        List<RaquetaResponseDto> res = mapper.readValue(response.getContentAsString(),
-                mapper.getTypeFactory().constructCollectionType(List.class, RaquetaResponseDto.class));
-
-        assertAll(
-                () -> assertEquals(response.getStatus(), HttpStatus.OK.value()),
-                () -> assertTrue(response.getContentAsString().contains("\"id\":" + raqueta.getId())),
-                () -> assertTrue(res.size() > 0),
-                () -> assertTrue(res.stream().anyMatch(r -> r.getId().equals(raqueta.getId())))
-        );
-
-        // Verifico que se ha llamado al servicio
-        // Verificamos que se ha llamado al método
-        Mockito.verify(raquetasService, times(1))
-                .findAll();
-        Mockito.verify(raquetaMapper, times(1))
-                .toResponse(List.of(raqueta));
-    }
-
-    @Test
-    void findByIdTest() throws Exception {
-        // Lo que vamos a simular
-        when(raquetasService.findById(raqueta.getId()))
-                .thenReturn(raqueta);
-        when(raquetaMapper.toResponse(raqueta))
-                .thenReturn(raquetaResponseDto);
-
-        // Consulto el endpoint
-        MockHttpServletResponse response = mockMvc.perform(
-                        get(myEndpoint + "/" + raqueta.getId())
-                                .accept(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-
-        // Proceso la respuesta
-        RaquetaResponseDto res = mapper.readValue(response.getContentAsString(), RaquetaResponseDto.class);
-
-        assertAll(
-                () -> assertEquals(response.getStatus(), HttpStatus.OK.value()),
-                () -> assertEquals(res.getId(), raqueta.getId())
-        );
-
-        // Verificamos que se ha llamado al método
-        verify(raquetasService, times(1))
-                .findById(raqueta.getId());
-        verify(raquetaMapper, times(1))
-                .toResponse(raqueta);
-    }
-
-    @Test
-    void findByIdNotFound() throws Exception {
-        // Lo que vamos a simular
-        when(raquetasService.findById(-1000L))
-                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "No se ha encontrado la raqueta con id: -1000"));
-
-        // Consulto el endpoint
-        MockHttpServletResponse response = mockMvc.perform(
-                        get(myEndpoint + "/" + -1000L)
-                                .accept(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-
-        // Proceso la respuesta
-        try {
-            RaquetaResponseDto res = mapper.readValue(response.getContentAsString(), RaquetaResponseDto.class);
-        } catch (Exception ignored) {
-        }
-
-        assertAll(
-                () -> assertEquals(response.getStatus(), HttpStatus.NOT_FOUND.value())
-        );
-
-        // Verificamos que se ha llamado al método
-        verify(raquetasService, times(1))
-                .findById(-1000L);
-    }
-
-    @Test
-    void createTest() throws Exception {
-        // Lo que vamos a simular
-        when(raquetasService.create(raquetaRequestDto))
-                .thenReturn(raqueta);
-        when(raquetaMapper.toResponse(raqueta))
-                .thenReturn(raquetaResponseDto);
-
-        // Consulto el endpoint
-        MockHttpServletResponse response = mockMvc.perform(
-                        post(myEndpoint) 
-                                .contentType(MediaType.APPLICATION_JSON) // Indicamos el tipo de contenido
-                                .content(mapper.writeValueAsString(raquetaRequestDto)) // Indicamos el contenido como JSON
-                .andReturn().getResponse();
-
-        // Proceso la respuesta
-        RaquetaResponseDto res = mapper.readValue(response.getContentAsString(), RaquetaResponseDto.class);
-
-        assertAll(
-                () -> assertEquals(response.getStatus(), HttpStatus.CREATED.value()),
-                () -> assertEquals(res.getId(), raqueta.getId())
-        );
-
-        // Verificamos que se ha llamado al método
-        verify(raquetasService, times(1))
-                .create(raquetaRequestDto);
-        verify(raquetaMapper, times(1))
-                .toResponse(raqueta);
+    public Pedido calcularTotal(Pedido pedido) {
+        pedido.setTotal(pedido.getCantidad() * 10.0); // Supongamos un precio fijo por unidad
+        return pedido;
     }
 }
 ```
+Controlador:
+```java
+@RestController
+@RequestMapping("/api/pedidos")
+public class PedidoController {
+
+    @Autowired
+    private PedidoService pedidoService;
+
+    @PostMapping
+    public Pedido crearPedido(@RequestBody Pedido pedido) {
+        return pedidoService.calcularTotal(pedido);
+    }
+}
+```
+Test del controlador con MockBean:
+```java
+@SpringBootTest
+@AutoConfigureMockMvc
+public class PedidoControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private PedidoService pedidoService;
+
+    @Test
+    void testCrearPedido() throws Exception {
+        // Datos de entrada
+        Pedido pedido = new Pedido();
+        pedido.setProducto("Libro");
+        pedido.setCantidad(2);
+
+        // Datos simulados de salida
+        Pedido pedidoConTotal = new Pedido();
+        pedidoConTotal.setProducto("Libro");
+        pedidoConTotal.setCantidad(2);
+        pedidoConTotal.setTotal(20.0);
+
+        // Simulamos el comportamiento del servicio
+        when(pedidoService.calcularTotal(any(Pedido.class))).thenReturn(pedidoConTotal);
+
+        // Realizamos la petición POST
+        mockMvc.perform(post("/api/pedidos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"producto\": \"Libro\", \"cantidad\": 2}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.producto").value("Libro"))
+                .andExpect(jsonPath("$.cantidad").value(2))
+                .andExpect(jsonPath("$.total").value(20.0));
+
+        // Verificamos que se llamó al servicio
+        verify(pedidoService).calcularTotal(any(Pedido.class));
+    }
+}
+```
+**Explicación:**
+1. `@MockBean`: Simula el comportamiento de la dependencia `PedidoService` dentro del controlador.
+2. `MockMvc`: Nos permite realizar peticiones HTTP simuladas y comprobar las respuestas.
+3. `jsonPath`: Verifica que el JSON de respuesta contiene los valores esperados.
+4. **Ventaja**: Este enfoque permite probar exclusivamente la lógica HTTP del controlador, aislándolo del comportamiento de otros componentes.
+
+---
 
 # Prácticas de Testing en Spring Boot
 
