@@ -15,45 +15,40 @@
    - 3.2. [Estrategias de Generación de IDs](#estrategias-de-generación-de-ids)
    - 3.3. [Ejemplo de una Entidad Simple](#ejemplo-de-una-entidad-simple)
 
-4. [Repositorios en Spring Data JPA](#repositorios-en-spring-data-jpa)
-   - 4.1. [Interfaces Principales](#interfaces-principales)
-   - 4.2. [Creación de un Repositorio](#creación-de-un-repositorio)
+4. [Uso de Lombok para Simplificar el Código de las Entidades](#uso-de-lombok-para-simplificar-el-código-de-las-entidades)
+   - 4.1. [¿Por qué usar Lombok?](#por-qué-usar-lombok)
+   - 4.2. [Dependencia en pom.xml](#dependencia-en-pomxml)
+   - 4.3. [Principales Anotaciones de Lombok](#principales-anotaciones-de-lombok)
+   - 4.4. [Ejemplo con y sin Lombok](#ejemplo-con-y-sin-lombok)
+   - 4.5. [Consideraciones al Usar Lombok](#consideraciones-al-usar-lombok)
 
-5. [Operaciones CRUD Básicas](#operaciones-crud-básicas)
-   - 5.1. [Equivalencia entre SQL y JPA](#equivalencia-entre-sql-y-jpa)
-   - 5.2. [Operaciones CRUD](#operaciones-crud)
-      - 5.2.1. [Guardar una Entidad](#guardar-una-entidad)
-      - 5.2.2. [Obtener una Entidad](#obtener-una-entidad)
-      - 5.2.3. [Actualizar una Entidad](#actualizar-una-entidad)
-      - 5.2.4. [Eliminar una Entidad](#eliminar-una-entidad)
+5. [Repositorios en Spring Data JPA](#repositorios-en-spring-data-jpa)
+   - 5.1. [Interfaces Principales](#interfaces-principales)
+   - 5.2. [Creación de un Repositorio](#creación-de-un-repositorio)
 
-6. [Consultas Personalizadas](#consultas-personalizadas)
-   - 6.1. [Métodos Derivados](#métodos-derivados)
-   - 6.2. [Uso de la Anotación @Query](#uso-de-la-anotación-query)
-   - 6.3. [Consultas Nativas](#consultas-nativas)
+6. [Operaciones CRUD Básicas](#operaciones-crud-básicas)
+   - 6.1. [Equivalencia entre SQL y JPA](#equivalencia-entre-sql-y-jpa)
+   - 6.2. [Operaciones CRUD](#operaciones-crud)
 
-7. [Relaciones entre Entidades](#relaciones-entre-entidades)
-   - 7.1. [Anotaciones para Mapear Relaciones en JPA](#anotaciones-para-mapear-relaciones-en-jpa)
-      - 7.1.1. [@OneToOne](#onetoone)
-      - 7.1.2. [@OneToMany y @ManyToOne](#onetomany-y-manytoone)
-      - 7.1.3. [@ManyToMany](#manytomany)
-   - 7.2. [Clave Compuesta con @EmbeddedId](#clave-compuesta-con-embeddedid)
+7. [Consultas Personalizadas](#consultas-personalizadas)
+   - 7.1. [Métodos Derivados](#métodos-derivados)
+   - 7.2. [Uso de la Anotación @Query](#uso-de-la-anotación-query)
+   - 7.3. [Consultas Nativas](#consultas-nativas)
 
-8. [Ejemplo Práctico Ampliado](#ejemplo-práctico-ampliado)
-   - 8.1. [Entidades y Relaciones](#entidades-y-relaciones)
-      - 8.1.1. [Entidad Autor](#entidad-autor)
-      - 8.1.2. [Entidad Editorial](#entidad-editorial)
-      - 8.1.3. [Entidad Libro](#entidad-libro)
-   - 8.2. [Repositorios](#repositorios)
-   - 8.3. [Servicio con Transacciones y Consultas Personalizadas](#servicio-con-transacciones-y-consultas-personalizadas)
-   - 8.4. [Controlador con Método Completado](#controlador-con-método-completado)
-   - 8.5. [Definición de LibroDTO](#definición-de-librodto)
+8. [Relaciones entre Entidades](#relaciones-entre-entidades)
+   - 8.1. [Anotaciones para Mapear Relaciones en JPA](#anotaciones-para-mapear-relaciones-en-jpa)
+   - 8.2. [Clave Compuesta con @EmbeddedId](#clave-compuesta-con-embeddedid)
 
-9. [Ejercicios Propuestos](#ejercicios-propuestos)
+9. [Ejemplo Práctico Ampliado](#ejemplo-práctico-ampliado)
+   - 9.1. [Entidades y Relaciones](#entidades-y-relaciones)
+   - 9.2. [Repositorios](#repositorios)
+   - 9.3. [Servicio con Transacciones y Consultas Personalizadas](#servicio-con-transacciones-y-consultas-personalizadas)
+   - 9.4. [Controlador con Método Completado](#controlador-con-método-completado)
+   - 9.5. [Definición de LibroDTO](#definición-de-librodto)
 
-10. [Referencias](#referencias)
+10. [Ejercicios Propuestos](#ejercicios-propuestos)
 
-
+11. [Referencias](#referencias)
 
 ---
 
@@ -201,6 +196,184 @@ public class Usuario {
     // Getters y Setters
 }
 ```
+
+---
+
+## Uso de Lombok para Simplificar el Código de las Entidades
+
+Lombok es una biblioteca de Java que ayuda a reducir el código repetitivo en las clases. En el contexto de Spring Boot y JPA, Lombok resulta especialmente útil para reducir la cantidad de código en nuestras entidades, eliminando la necesidad de escribir manualmente métodos como `getters`, `setters`, `toString`, `equals`, `hashCode` y constructores.
+
+### ¿Por qué usar Lombok?
+
+- **Simplifica el código**: Reduce el número de líneas y mejora la legibilidad.
+- **Mejora la productividad**: Menos código que mantener.
+- **Integración sencilla**: Compatible con Spring Boot y JPA.
+
+### Dependencia en pom.xml
+
+Para utilizar Lombok en tu proyecto Spring Boot, añade la siguiente dependencia en el archivo `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.26</version> <!-- Ajusta la versión según la última disponible -->
+    <scope>provided</scope>
+</dependency>
+```
+
+### Principales Anotaciones de Lombok
+
+1. **@Getter y @Setter**
+   - Generan automáticamente los métodos `getters` y `setters` para los campos de la clase.
+
+   ```java
+   @Getter
+   @Setter
+   public class Usuario {
+       private Long id;
+       private String nombre;
+   }
+   ```
+
+2. **@Data**
+   - Combina varias anotaciones (`@Getter`, `@Setter`, `@ToString`, `@EqualsAndHashCode`, `@RequiredArgsConstructor`) para reducir aún más el código.
+
+   ```java
+   @Data
+   @Entity
+   public class Usuario {
+       @Id
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       private Long id;
+       private String nombre;
+       private String email;
+   }
+   ```
+
+3. **@NoArgsConstructor y @AllArgsConstructor**
+   - Generan constructores sin parámetros (`@NoArgsConstructor`) y con todos los parámetros (`@AllArgsConstructor`).
+
+   ```java
+   @NoArgsConstructor
+   @AllArgsConstructor
+   @Entity
+   public class Usuario {
+       @Id
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       private Long id;
+       private String nombre;
+       private String email;
+   }
+   ```
+
+4. **@Builder**
+   - Permite construir instancias de clases utilizando el patrón Builder, ideal para clases con muchos campos.
+
+   ```java
+   @Data
+   @Builder
+   @Entity
+   public class Usuario {
+       @Id
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       private Long id;
+       private String nombre;
+       private String email;
+   }
+   ```
+
+### Ejemplo con y sin Lombok
+
+**Sin Lombok:**
+
+```java
+@Entity
+public class Usuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nombre;
+    private String email;
+
+    public Usuario() {}
+
+    public Usuario(Long id, String nombre, String email) {
+        this.id = id;
+        this.nombre = nombre;
+        this.email = email;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{id=" + id + ", nombre='" + nombre + "', email='" + email + "'}";
+    }
+}
+```
+
+**Con Lombok:**
+
+```java
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Usuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nombre;
+    private String email;
+}
+```
+
+### Consideraciones al Usar Lombok
+
+- **IDE:** Asegúrate de que tu IDE soporte Lombok. En IntelliJ IDEA, es necesario instalar el plugin de Lombok.
+- **Depuración:** El uso de Lombok puede dificultar la depuración en algunos casos, ya que los métodos generados no aparecen directamente en el código.
+- **Documentación:** Aunque reduce el código, es importante que los equipos de desarrollo estén familiarizados con Lombok para evitar confusiones.
+
+### Ejemplo Práctico: Simplificando una Entidad con Lombok
+
+```java
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Cliente {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nombre;
+    private String email;
+}
+```
+
+Con Lombok, podemos centrarnos más en la lógica de negocio y menos en el código repetitivo, aumentando la eficiencia y manteniendo el código limpio.
 
 ---
 
