@@ -357,17 +357,21 @@ No debes olvidar añadir un [handler](https://www.baeldung.com/spring-boot-bean-
 
 ```java
  // Para capturar los errores de validación
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-@ExceptionHandler(MethodArgumentNotValidException.class)
-public Map<String, String> handleValidationExceptions(
-        MethodArgumentNotValidException ex) {
-    Map<String, String> errors = new HashMap<>();
-    ex.getBindingResult().getAllErrors().forEach((error) -> {
-        String fieldName = ((FieldError) error).getField();
-        String errorMessage = error.getDefaultMessage();
-        errors.put(fieldName, errorMessage);
-    });
-    return errors;
+@RestControllerAdvice
+public class ValidacionExceptionHandler {
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
+    }
 }
 ```
 
