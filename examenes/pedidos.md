@@ -20,7 +20,7 @@ El sistema contará con **dos entidades principales:** `Pedido` y `Factura`, las
 | `cantidad`    | `int`         | Mayor que 0                  |
 | `precioUnitario` | `double`   | Mayor que 0                  |
 | `total`       | `double`      | Se calcula automáticamente   |
-| `estado`      | `String`      | Valores permitidos: PENDIENTE, PAGADO, CANCELADO |
+| `estado`      | `Enum`      | Valores permitidos: PENDIENTE, PAGADO, CANCELADO |
 | `fechaPedido` | `LocalDateTime` | Se asigna automáticamente |
 
 ### **Entidad Factura**
@@ -80,6 +80,7 @@ Debe implementar:
 ## 6. DOCUMENTACIÓN DE LA API
 
 Se debe implementar **documentación de la API con Swagger** para facilitar la prueba y exploración de los endpoints.
+Crea una carpeta llamada **capturas** en resource y realiza llamadas a cada uno de los endpoints, guarda una captura de esas llamadas en el swagger dentro de la carpeta capturas.
 
 ## 7. PRUEBAS UNITARIAS
 
@@ -89,8 +90,7 @@ Las pruebas mínimas requeridas incluyen:
 
 - **PedidoService**
   1. Creación de un pedido con valores correctos.
-  2. Intento de cancelación de un pedido ya pagado (debe fallar).
-  3. Cambio de estado de un pedido de PENDIENTE a PAGADO.
+  2. Busqueda de un pedido por nombre de cliente.
 
 ## 8. CRITERIOS DE CALIFICACIÓN
 
@@ -98,10 +98,11 @@ La calificación total será sobre **10 puntos** distribuidos de la siguiente ma
 
 | Criterio                         | Puntos | Requisitos para obtener la puntuación completa |
 |---------------------------------|--------|------------------------------------------------|
-| **Modelado de datos**           | 2      | Las entidades deben estar correctamente definidas con las anotaciones adecuadas. |
-| **Repositorios**                | 1      | Los repositorios deben extender `JpaRepository` y contener los métodos requeridos. |
-| **Servicios y lógica de negocio** | 2.5    | Implementación correcta de la lógica de negocio y uso de caché en la consulta de pedidos. |
+| **Modelado de datos y dependencias**           | 2      | Las entidades deben estar correctamente definidas con las anotaciones adecuadas y el proyecto con las dependencias adecuadas. |
+| **Servicios y lógica de negocio** | 3.5    | Implementación correcta de la lógica de negocio. |
+| **Uso de caché** | 0.5    | Uso de caché en la consulta de pedidos. |
+| **Validaciones** | 0.5    | Realización correcta de las validaciones de las entidades. |
 | **Endpoints REST**               | 1.5    | Los endpoints deben estar correctamente implementados y funcionales. |
 | **Documentación con Swagger**    | 1      | La API debe estar documentada y accesible a través de Swagger. |
-| **Pruebas unitarias**            | 2      | Implementación de pruebas unitarias con JUnit y Mockito para validar los servicios. |
+| **Pruebas unitarias**            | 1      | Implementación de pruebas unitarias con JUnit y Mockito para validar los servicios. |
 
