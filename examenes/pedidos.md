@@ -98,11 +98,11 @@ La calificación total será sobre **10 puntos** distribuidos de la siguiente ma
 
 | Criterio                         | Puntos | Requisitos para obtener la puntuación completa |
 |---------------------------------|--------|------------------------------------------------|
-| **Modelado de datos y dependencias**           | 2      | Las entidades deben estar correctamente definidas con las anotaciones adecuadas y el proyecto con las dependencias adecuadas. |
+| **Modelado de datos y proyecto**           | 2      | Las entidades deben estar correctamente definidas con las anotaciones adecuadas y el proyecto con las dependencias adecuadas. |
 | **Servicios y lógica de negocio** | 3.5    | Implementación correcta de la lógica de negocio. |
 | **Uso de caché** | 0.5    | Uso de caché en la consulta de pedidos. |
-| **Validaciones** | 0.5    | Realización correcta de las validaciones de las entidades. |
+| **Validaciones** | 0.5    | Realización correcta de las validaciones de las entidades y gestión adecuada de errores en los controladores |
 | **Endpoints REST**               | 1.5    | Los endpoints deben estar correctamente implementados y funcionales. |
 | **Documentación con Swagger**    | 1      | La API debe estar documentada y accesible a través de Swagger. |
-| **Pruebas unitarias**            | 1      | Implementación de pruebas unitarias con JUnit y Mockito para validar los servicios. |
+| **Pruebas unitarias**            | 1      | Implementación de pruebas unitarias con JUnit y Mockito para validar los métodos indicados. |
 
