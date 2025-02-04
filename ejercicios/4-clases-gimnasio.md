@@ -71,6 +71,7 @@ Crea las siguientes entidades asegurando un correcto uso de **Lombok y validacio
 2. Implementa un test para el **controlador que registra nuevos clientes**.
 3. Asegura que las pruebas verifican correctamente el comportamiento esperado:
    - Ejemplo de caso de prueba: El servicio debe retornar una lista vacía si no hay clases registradas.
+   - Otro ejemplo: El servicio debe lanzar un error si se quiere realizar una reserva en una clase que está llena.
 
 ---
 

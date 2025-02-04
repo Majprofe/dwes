@@ -12,7 +12,7 @@ Crearás una API REST para una aplicación de gestión de tareas, donde:
 - **El backend** verificará los tokens de Firebase para autenticar a los usuarios.
 - **Los roles** determinarán el acceso a diferentes funcionalidades:
   - **User**: Podrá crear, ver y editar sus propias tareas.
-  - **Admin**: Podrá ver y gestionar todas las tareas.
+  - **Admin**: Podrá ver y borrar las tareas.
 
 ---
 
@@ -59,9 +59,9 @@ Crearás una API REST para una aplicación de gestión de tareas, donde:
 
 3. **Endpoints REST**:
    - `/tasks`:
-     - `GET /tasks`: Obtener todas las tareas (solo para admin).
+     - `GET /tasks`: Obtener todas las tareas (para usuario autenticados).
      - `POST /tasks`: Crear una tarea (para usuarios autenticados).
-     - `GET /tasks/user`: Obtener las tareas propias del usuario autenticado (para usuarios con rol USER).
+     - `DELETE /tasks/ID`: Borrar tareas (para usuarios con rol ADMIN).
 
 ### 3. Roles de Usuario
 - Los usuarios deberán tener un campo “role” en Firebase Firestore o un token personalizado.
@@ -70,9 +70,10 @@ Crearás una API REST para una aplicación de gestión de tareas, donde:
 - Crear un frontend simple que permita:
   - Registro e inicio de sesión mediante Firebase.
   - Consumo de la API REST del backend.
-  - Visualización de tareas propias (para usuarios).
-  - Visualización de todas las tareas (para admins).
+  - Visualización de tareas comunes (todos los usuarios).
   - Crear tareas (todos los usuarios).
+  - Borrar tareas (para admins).
+
 
 ---
 
@@ -110,8 +111,8 @@ Se evaluará:
 | El filtro de autenticación para validar tokens de Firebase está correctamente implementado. | 15     |
 | Los endpoints están implementados y funcionan según lo especificado:    |        |
 | - `POST /tasks`: Crear tareas (autenticación requerida).                 | 10     |
-| - `GET /tasks`: Obtener todas las tareas (solo admin).                   | 10     |
-| - `GET /tasks/user`: Obtener las tareas propias del usuario autenticado. | 5      |
+| - `GET /tasks`: Obtener todas las tareas (para usuario autenticados).                   | 5     |
+| - `DELETE /tasks/ID`: Borrar tareas (para usuarios con rol ADMIN). | 10      |
 
 ### 3. **Gestor de Roles** (15 puntos)
 

@@ -196,9 +196,9 @@ Y añadir la anotación `@EnableCaching` en la clase principal (método main y a
 @CacheConfig(cacheNames = {"raquetas"})
 ```
 
-- @Cacheable: Se usa para indicar que un método es cachable. Si el método ya ha sido ejecutado, se devuelve el resultado de la cache. Si no, se ejecuta el método y se guarda el resultado en la cache. Se le puede indicar el nombre de la cache, el key y el tiempo de expiración. Se recomienda usar el key como identificador
-- @CachePut: Se usa para indicar que un método es cachable. Si el método ya ha sido ejecutado, se ejecuta de nuevo y se guarda el resultado en la cache. Se le puede indicar el nombre de la cache, el key y el tiempo de expiración. Se recomienda usar result.key para la cache
-- @CacheEvict: Se usa para indicar que un método es cachable. Si el método ya ha sido ejecutado, se elimina el resultado de la cache. Se le puede indicar el nombre de la cache, el key y el tiempo de expiración. Se recomienda usar el Key.
+- @Cacheable: Se usa en metodos de consulta. Se usa para indicar que un método es cachable. Si el método ya ha sido ejecutado, se devuelve el resultado de la cache. Si no, se ejecuta el método y se guarda el resultado en la cache. Se le puede indicar el nombre de la cache, el key y el tiempo de expiración. Se recomienda usar el key como identificador
+- @CachePut: Se usa en métodos para guardar o modificar. Se usa para indicar que un método es cachable. Si el método ya ha sido ejecutado, se ejecuta de nuevo y se guarda el resultado en la cache. Se le puede indicar el nombre de la cache, el key y el tiempo de expiración. Se recomienda usar result.key para la cache
+- @CacheEvict: Se usa en métodos de borrado. Se usa para indicar que un método es cachable. Si el método ya ha sido ejecutado, se elimina el resultado de la cache. Se le puede indicar el nombre de la cache, el key y el tiempo de expiración. Se recomienda usar el Key.
 
 ```java
 @CacheConfig(cacheNames = {"raquetas"})
@@ -217,7 +217,7 @@ public RaquetasCacheado() {
     }
 
     // Cachea con el id del resultado de la operación como key
-   @CachePut(key = "#result.id") 
+   @CachePut(key = "#raqueta.id") 
     public Raqueta save(Raqueta raqueta) {
         //...
     }
@@ -357,17 +357,21 @@ No debes olvidar añadir un [handler](https://www.baeldung.com/spring-boot-bean-
 
 ```java
  // Para capturar los errores de validación
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-@ExceptionHandler(MethodArgumentNotValidException.class)
-public Map<String, String> handleValidationExceptions(
-        MethodArgumentNotValidException ex) {
-    Map<String, String> errors = new HashMap<>();
-    ex.getBindingResult().getAllErrors().forEach((error) -> {
-        String fieldName = ((FieldError) error).getField();
-        String errorMessage = error.getDefaultMessage();
-        errors.put(fieldName, errorMessage);
-    });
-    return errors;
+@RestControllerAdvice
+public class ValidacionExceptionHandler {
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
+    }
 }
 ```
 
