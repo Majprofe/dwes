@@ -62,21 +62,20 @@ Debe implementar:
 
 ---
 
-## **🌍 5. Endpoints REST**
+## 🌍 **5. Endpoints REST**
+
 ### **Endpoints del `JugadorController`**
-| Método HTTP | Endpoint                  | Descripción                                   |
-|-------------|---------------------------|-----------------------------------------------|
-| `GET`       | `/jugadores`              | Listar jugadores ordenados por ranking        |
-| `GET`       | `/jugadores/{id}`         | Obtener información de un jugador             |
-| `POST`      | `/jugadores`              | Agregar un nuevo jugador                      |
-| `PUT`       | `/jugadores/{id}/ranking` | Actualizar ranking de un jugador              |
+- **`GET /jugadores`** → Listar jugadores ordenados por ranking.
+- **`GET /jugadores/{id}`** → Obtener información de un jugador.
+- **`POST /jugadores`** → Agregar un nuevo jugador.
+- **`PUT /jugadores/{id}/ranking`** → Actualizar ranking de un jugador.
+
+---
 
 ### **Endpoints del `PartidoController`**
-| Método HTTP | Endpoint                      | Descripción                                          |
-|-------------|-------------------------------|------------------------------------------------------|
-| `POST`      | `/partidos`                   | Registrar un nuevo partido                           |
-| `PUT`       | `/partidos/{id}/resultado`    | Actualizar resultado de un partido                   |
-| `GET`       | `/partidos/jugador/{id}`      | Listar partidos de un jugador                        |
+- **`POST /partidos`** → Registrar un nuevo partido.
+- **`PUT /partidos/{id}/resultado`** → Actualizar resultado de un partido.
+- **`GET /partidos/jugador/{id}`** → Listar partidos de un jugador.
 
 ---
 
