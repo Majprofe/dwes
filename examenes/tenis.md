@@ -105,4 +105,5 @@ Se deben implementar **2 pruebas unitarias**:
 - Si un endpoint no compila o da errores graves, su puntuación se reduce a 0 puntos.
 - Si un endpoint está presente pero con errores menores, se otorga hasta el 50% de la puntuación.
 - Si usa validaciones adecuadas (por ejemplo, no permitir nombres vacíos o números negativos en ranking), obtiene la puntuación completa.
+
 ---
