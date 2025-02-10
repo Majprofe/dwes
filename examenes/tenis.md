@@ -16,24 +16,24 @@ En esta prueba técnica desarrollarás un sistema de **gestión de torneos de te
 ## 📂 1. Modelado de Datos (2 entidades principales)
 
 ### **🎾 Entidad `Jugador`**
-| Atributo       | Tipo        | Restricciones |
-|---------------|------------|--------------|
-| `id`         | `Long`      | Autogenerado (PK) |
-| `nombre`     | `String`    | No nulo, mínimo 3 caracteres |
-| `ranking`    | `int`       | Mayor que 0, menor que 1000 |
-| `edad`       | `int`       | Mayor que 15 |
-| `equipo`     | `String`    | No nulo |
+| Atributo  | Tipo     | Restricciones                   |
+|-----------|----------|---------------------------------|
+| `id`      | `Long`   | Autogenerado (PK)               |
+| `nombre`  | `String` | No nulo, mínimo 3 caracteres    |
+| `ranking` | `int`    | Mayor que 0, menor que 1000     |
+| `edad`    | `int`    | Mayor que 15                    |
+| `equipo`  | `String` | No nulo                         |
 
 ---
 
 ### **🏆 Entidad `Partido`**
-| Atributo       | Tipo        | Restricciones |
-|---------------|------------|--------------|
-| `id`         | `Long`      | Autogenerado (PK) |
-| `jugador1`   | `Jugador`   | ManyToOne |
-| `jugador2`   | `Jugador`   | ManyToOne |
-| `fecha`      | `LocalDateTime` | No nulo |
-| `resultado`  | `String`    | Puede ser `null` hasta que se juegue |
+| Atributo    | Tipo            | Restricciones                         |
+|-------------|-----------------|---------------------------------------|
+| `id`        | `Long`          | Autogenerado (PK)                     |
+| `jugador1`  | `Jugador`       | ManyToOne                             |
+| `jugador2`  | `Jugador`       | ManyToOne                             |
+| `fecha`     | `LocalDateTime` | No nulo                               |
+| `resultado` | `String`        | Puede ser `null` hasta que se juegue  |
 
 ---
 
@@ -68,19 +68,19 @@ Debe implementar:
 
 ## **🌍 5. Endpoints REST**
 ### **Endpoints del `JugadorController`**
-| Método HTTP | Endpoint               | Descripción |
-|------------|------------------------|-------------|
-| `GET`      | `/jugadores`           | Listar jugadores ordenados por ranking |
-| `GET`      | `/jugadores/{id}`       | Obtener información de un jugador |
-| `POST`     | `/jugadores`           | Agregar un nuevo jugador |
-| `PUT`      | `/jugadores/{id}/ranking` | Actualizar ranking de un jugador |
+| Método HTTP | Endpoint                  | Descripción                                   |
+|-------------|---------------------------|-----------------------------------------------|
+| `GET`       | `/jugadores`              | Listar jugadores ordenados por ranking        |
+| `GET`       | `/jugadores/{id}`         | Obtener información de un jugador             |
+| `POST`      | `/jugadores`              | Agregar un nuevo jugador                      |
+| `PUT`       | `/jugadores/{id}/ranking` | Actualizar ranking de un jugador              |
 
 ### **Endpoints del `PartidoController`**
-| Método HTTP | Endpoint               | Descripción |
-|------------|------------------------|-------------|
-| `POST`     | `/partidos`            | Registrar un nuevo partido |
-| `PUT`      | `/partidos/{id}/resultado` | Actualizar resultado de un partido |
-| `GET`      | `/partidos/jugador/{id}` | Listar partidos de un jugador |
+| Método HTTP | Endpoint                      | Descripción                                          |
+|-------------|-------------------------------|------------------------------------------------------|
+| `POST`      | `/partidos`                   | Registrar un nuevo partido                           |
+| `PUT`       | `/partidos/{id}/resultado`    | Actualizar resultado de un partido                   |
+| `GET`       | `/partidos/jugador/{id}`      | Listar partidos de un jugador                        |
 
 ---
 
