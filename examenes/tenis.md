@@ -16,24 +16,24 @@ En esta prueba técnica desarrollarás un sistema de **gestión de torneos de te
 ## 📂 1. Modelado de Datos (2 entidades principales)
 
 ### **🎾 Entidad `Jugador`**
-| Atributo  | Tipo     | Restricciones                   |
+| Atributo  | Tipo     | Restricciones                    |
 |-----------|----------|---------------------------------|
 | `id`      | `Long`   | Autogenerado (PK)               |
 | `nombre`  | `String` | No nulo, mínimo 3 caracteres    |
 | `ranking` | `int`    | Mayor que 0, menor que 1000     |
 | `edad`    | `int`    | Mayor que 15                    |
-| `equipo`  | `String` | No nulo                         |
+| `equipo`  | `String` | No nulo                          |
 
 ---
 
 ### **🏆 Entidad `Partido`**
-| Atributo    | Tipo            | Restricciones                         |
+| Atributo    | Tipo            | Restricciones                          |
 |-------------|-----------------|---------------------------------------|
 | `id`        | `Long`          | Autogenerado (PK)                     |
 | `jugador1`  | `Jugador`       | ManyToOne                             |
 | `jugador2`  | `Jugador`       | ManyToOne                             |
 | `fecha`     | `LocalDateTime` | No nulo                               |
-| `resultado` | `String`        | Puede ser `null` hasta que se juegue  |
+| `resultado` | `String`        | Puede ser `null` hasta que se juegue   |
 
 ---
 
