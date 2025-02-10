@@ -44,6 +44,7 @@ Crea los repositorios extendiendo `JpaRepository`:
 ### **📌 Servicio `JugadorService`**
 Debe implementar:
 1. **Listar jugadores ordenados por ranking.**
+2. **Agregar un nuevo jugador**
 2. **Actualizar el ranking de un jugador.**
 
 ### **📌 Servicio `PartidoService`**
