@@ -20,7 +20,6 @@ En esta prueba técnica desarrollarás un sistema de **gestión de torneos de te
 - **nombre** (`String`): No nulo, mínimo 3 caracteres.
 - **ranking** (`int`): Mayor que 0, menor que 1000.
 - **edad** (`int`): Mayor que 15.
-- **equipo** (`String`): No nulo.
 
 ---
 
@@ -66,7 +65,6 @@ Debe implementar:
 
 ### **Endpoints del `JugadorController`**
 - **`GET /jugadores`** → Listar jugadores ordenados por ranking.
-- **`GET /jugadores/{id}`** → Obtener información de un jugador.
 - **`POST /jugadores`** → Agregar un nuevo jugador.
 - **`PUT /jugadores/{id}/ranking`** → Actualizar ranking de un jugador.
 
