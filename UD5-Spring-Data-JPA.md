@@ -377,22 +377,6 @@ public class Usuario {
 - **Depuración:** El uso de Lombok puede dificultar la depuración en algunos casos, ya que los métodos generados no aparecen directamente en el código.
 - **Documentación:** Aunque reduce el código, es importante que los equipos de desarrollo estén familiarizados con Lombok para evitar confusiones.
 
-### Ejemplo Práctico: Simplificando una Entidad con Lombok
-
-```java
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-public class Cliente {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String nombre;
-    private String email;
-}
-```
-
 Con Lombok, podemos centrarnos más en la lógica de negocio y menos en el código repetitivo, aumentando la eficiencia y manteniendo el código limpio.
 
 ---
