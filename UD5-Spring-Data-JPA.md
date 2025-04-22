@@ -620,6 +620,8 @@ public class Curso {
     private String titulo;
 
     @ManyToMany(mappedBy = "cursos")
+    @JsonIgnore //Para evitar devolver Json recursivos
+
     private List<Estudiante> estudiantes;
 
     // Getters y Setters
