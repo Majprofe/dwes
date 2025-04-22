@@ -222,6 +222,26 @@ Para utilizar Lombok en tu proyecto Spring Boot, añade la siguiente dependencia
 </dependency>
 ```
 
+Y este plugin en el build del pom.xml:
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.11.0</version>
+    <configuration>
+        <source>17</source>       <!-- o 21, según tu JDK -->
+        <target>17</target>
+        <annotationProcessorPaths>
+            <path>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.32</version>
+            </path>
+        </annotationProcessorPaths>
+    </configuration>
+</plugin>
+```
+
 ### Principales Anotaciones de Lombok
 
 1. **@Getter y @Setter**
