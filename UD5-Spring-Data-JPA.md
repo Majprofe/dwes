@@ -222,7 +222,7 @@ Para utilizar Lombok en tu proyecto Spring Boot, añade la siguiente dependencia
 </dependency>
 ```
 
-Y este plugin en el build del pom.xml:
+Y este plugin en el build del `pom.xml`:
 ```xml
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
