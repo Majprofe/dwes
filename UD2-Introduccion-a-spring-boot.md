@@ -151,8 +151,8 @@ spring.datasource.driverClassName=com.mysql.jdbc.Driver
 Hay que tener en cuenta que la propiedad `spring.jpa.hibernate.ddl-auto` se utiliza para que la base de datos se genere automáticamente en cada arranque de la aplicación. Esto nos interesará cuando estemos en desarrollo pero no cuando queramos desplegarla en producción.
 
 - `none`: Para indicar que no queremos que genere la base de datos.
-- `update`: Si queremos que la genere de nuevo en cada arranque.
-- `create`: Si queremos que la cree pero que no la genere de nuevo si ya existe.
+- `update`: Genera la base de datos si no existe, pero si existe no modifica los datos existentes.
+- `create`: Elimina los datos y vuelve a crear la base de datos cada vez que arranca la aplicación.
 
 ---
 

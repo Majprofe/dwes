@@ -5,4 +5,3 @@
 3. [Repaso de servicios](./ejercicios/3-repaso-servicios.md)
 4. [Firebase - Spring Security](./ejercicios/8-autentificacion-firebase.md)
 5. [Gestión de clases de un gimnasio](./ejercicios/4-clases-gimnasio.md)
-6. [Exámen Spring Boot Final](./examenes/pedidos.md)

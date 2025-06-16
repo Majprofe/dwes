@@ -15,25 +15,20 @@ En esta prueba técnica desarrollarás un sistema de **gestión de torneos de te
 
 ## 📂 1. Modelado de Datos (2 entidades principales)
 
-### **🎾 Entidad `Jugador`**
-| Atributo       | Tipo        | Restricciones |
-|---------------|------------|--------------|
-| `id`         | `Long`      | Autogenerado (PK) |
-| `nombre`     | `String`    | No nulo, mínimo 3 caracteres |
-| `ranking`    | `int`       | Mayor que 0, menor que 1000 |
-| `edad`       | `int`       | Mayor que 15 |
-| `equipo`     | `String`    | No nulo |
+### 🎾 **Entidad Jugador**
+- **id** (`Long`): Autogenerado (PK).
+- **nombre** (`String`): No nulo, mínimo 3 caracteres.
+- **ranking** (`int`): Mayor que 0, menor que 1000.
+- **edad** (`int`): Mayor que 15.
 
 ---
 
-### **🏆 Entidad `Partido`**
-| Atributo       | Tipo        | Restricciones |
-|---------------|------------|--------------|
-| `id`         | `Long`      | Autogenerado (PK) |
-| `jugador1`   | `Jugador`   | ManyToOne |
-| `jugador2`   | `Jugador`   | ManyToOne |
-| `fecha`      | `LocalDateTime` | No nulo |
-| `resultado`  | `String`    | Puede ser `null` hasta que se juegue |
+### 🏆 **Entidad Partido**
+- **id** (`Long`): Autogenerado (PK).
+- **jugador1** (`Jugador`): Relación ManyToOne.
+- **jugador2** (`Jugador`): Relación ManyToOne.
+- **fecha** (`LocalDateTime`): No nulo.
+- **resultado** (`String`): Puede ser `null` hasta que se juegue.
 
 ---
 
@@ -49,8 +44,8 @@ Crea los repositorios extendiendo `JpaRepository`:
 ### **📌 Servicio `JugadorService`**
 Debe implementar:
 1. **Listar jugadores ordenados por ranking.**
-2. **Buscar jugadores por nombre.**
-3. **Actualizar el ranking de un jugador.**
+2. **Agregar un nuevo jugador**
+2. **Actualizar el ranking de un jugador.**
 
 ### **📌 Servicio `PartidoService`**
 Debe implementar:
@@ -66,21 +61,19 @@ Debe implementar:
 
 ---
 
-## **🌍 5. Endpoints REST**
+## 🌍 **5. Endpoints REST**
+
 ### **Endpoints del `JugadorController`**
-| Método HTTP | Endpoint               | Descripción |
-|------------|------------------------|-------------|
-| `GET`      | `/jugadores`           | Listar jugadores ordenados por ranking |
-| `GET`      | `/jugadores/{id}`       | Obtener información de un jugador |
-| `POST`     | `/jugadores`           | Agregar un nuevo jugador |
-| `PUT`      | `/jugadores/{id}/ranking` | Actualizar ranking de un jugador |
+- **`GET /jugadores`** → Listar jugadores ordenados por ranking.
+- **`POST /jugadores`** → Agregar un nuevo jugador.
+- **`PUT /jugadores/{id}/ranking`** → Actualizar ranking de un jugador.
+
+---
 
 ### **Endpoints del `PartidoController`**
-| Método HTTP | Endpoint               | Descripción |
-|------------|------------------------|-------------|
-| `POST`     | `/partidos`            | Registrar un nuevo partido |
-| `PUT`      | `/partidos/{id}/resultado` | Actualizar resultado de un partido |
-| `GET`      | `/partidos/jugador/{id}` | Listar partidos de un jugador |
+- **`POST /partidos`** → Registrar un nuevo partido.
+- **`PUT /partidos/{id}/resultado`** → Actualizar resultado de un partido.
+- **`GET /partidos/jugador/{id}`** → Listar partidos de un jugador.
 
 ---
 
@@ -110,4 +103,5 @@ Se deben implementar **2 pruebas unitarias**:
 - Si un endpoint no compila o da errores graves, su puntuación se reduce a 0 puntos.
 - Si un endpoint está presente pero con errores menores, se otorga hasta el 50% de la puntuación.
 - Si usa validaciones adecuadas (por ejemplo, no permitir nombres vacíos o números negativos en ranking), obtiene la puntuación completa.
+
 ---

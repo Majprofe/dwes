@@ -222,6 +222,26 @@ Para utilizar Lombok en tu proyecto Spring Boot, añade la siguiente dependencia
 </dependency>
 ```
 
+Y este plugin en el build del `pom.xml`:
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.11.0</version>
+    <configuration>
+        <source>${java.version}</source>       <!-- ajusta la versión según tu JDK -->
+        <target>${java.version}</target>
+        <annotationProcessorPaths>
+            <path>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.32</version>
+            </path>
+        </annotationProcessorPaths>
+    </configuration>
+</plugin>
+```
+
 ### Principales Anotaciones de Lombok
 
 1. **@Getter y @Setter**
@@ -356,22 +376,6 @@ public class Usuario {
 - **IDE:** Asegúrate de que tu IDE soporte Lombok. En IntelliJ IDEA, es necesario instalar el plugin de Lombok.
 - **Depuración:** El uso de Lombok puede dificultar la depuración en algunos casos, ya que los métodos generados no aparecen directamente en el código.
 - **Documentación:** Aunque reduce el código, es importante que los equipos de desarrollo estén familiarizados con Lombok para evitar confusiones.
-
-### Ejemplo Práctico: Simplificando una Entidad con Lombok
-
-```java
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-public class Cliente {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String nombre;
-    private String email;
-}
-```
 
 Con Lombok, podemos centrarnos más en la lógica de negocio y menos en el código repetitivo, aumentando la eficiencia y manteniendo el código limpio.
 
@@ -616,6 +620,7 @@ public class Curso {
     private String titulo;
 
     @ManyToMany(mappedBy = "cursos")
+    @JsonIgnore //Para evitar devolver Json recursivos
     private List<Estudiante> estudiantes;
 
     // Getters y Setters
