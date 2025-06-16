@@ -11,7 +11,7 @@
 | Entidad   | Atributos                                                                                                      | Notas                                             |
 |-----------|----------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
 | **Autor** | `id: Long` (PK, autogenerado) <br> `nombre: String` (no nulo, mínimo 3 caracteres)                             | —                                                 |
-| **Libro** | `id: Long` (PK, autogenerado) <br> `titulo: String` (no nulo, mínimo 3 caracteres) <br> `autor: Autor` (ManyToOne) <br> `anioPublicacion: int` (≥ 1900) | Un libro pertenece a un único autor              |
+| **Libro** | `id: Long` (PK, autogenerado) <br> `titulo: String` (no nulo, mínimo 3 caracteres) <br> `autor: Autor` (ManyToOne) <br> `anioPublicacion: int` (≥ 1900) | Un libro pertenece a un único autor y un autor puede tener muchos libros             |
 | **Prestamo** | `id: Long` (PK, autogenerado) <br> `libro: Libro` (ManyToOne) <br> `lector: String` (no nulo) <br> `fechaPrestamo: LocalDate` (no nulo) <br> `devuelto: boolean` (por defecto `false`) | Un lector es solo un String (simplificado)        |
 
 ---
@@ -23,6 +23,7 @@ Extiende `JpaRepository`:
 - `AutorRepository`
 - `LibroRepository`
 - `PrestamoRepository`
+
 ---
 
 ## ⚙️ 3. Servicios
@@ -55,7 +56,7 @@ Se deben implementar **pruebas unitarias** utilizando JUnit y Mockito para valid
 
 Las pruebas mínimas requeridas incluyen:
 
-- **PedidoService**
+- **LibroService**
   1. Creación de un libro con valores correctos.
   2. Busqueda de un libro por nombre de autor.
 
