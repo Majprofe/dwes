@@ -11,8 +11,8 @@
 | Entidad   | Atributos                                                                                                      | Notas                                             |
 |-----------|----------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
 | **Autor** | `id: Long` (PK, autogenerado) <br> `nombre: String` (no nulo, mínimo 3 caracteres)                             | —                                                 |
-| **Libro** | `id: Long` (PK, autogenerado) <br> `titulo: String` (no nulo, mínimo 3 caracteres) <br> `autor: Autor` (ManyToOne) <br> `anioPublicacion: int` (≥ 1900) | Un libro pertenece a un único autor y un autor puede tener muchos libros             |
-| **Prestamo** | `id: Long` (PK, autogenerado) <br> `libro: Libro` (ManyToOne) <br> `lector: String` (no nulo) <br> `fechaPrestamo: LocalDate` (no nulo) <br> `devuelto: boolean` (por defecto `false`) | Un lector es solo un String (simplificado)        |
+| **Libro** | `id: Long` (PK, autogenerado) <br> `titulo: String` (no nulo, mínimo 3 caracteres) <br> `autor: Autor` (ManyToOne) <br> `anioPublicacion: int` (≥ 1900) <br> `devuelto: boolean` (por defecto `false`) | Un libro pertenece a un único autor y un autor puede tener muchos libros             |
+| **Prestamo** | `id: Long` (PK, autogenerado) <br> `libro: Libro` (ManyToOne) <br> `lector: String` (no nulo) <br> `fechaPrestamo: LocalDate` (no nulo) | Un lector es solo un String (simplificado)        |
 
 ---
 
