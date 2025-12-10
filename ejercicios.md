@@ -7,3 +7,4 @@
 5. [Gestión de clases de un gimnasio](./ejercicios/4-clases-gimnasio.md)
 
 - [Examen recuperación junio](./examenes/biblioteca.md)
+- [Examen recuperación diciembre](./examenes/citas_medicas.md)
